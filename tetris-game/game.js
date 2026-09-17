@@ -208,7 +208,7 @@ class TetrisGame {
     this.level = 1;
     this.combo = -1;
     this.backToBack = false;
-    this.dropInterval = 1000;
+    this.dropInterval = 650; // Velocidad normal y natural automática
     this.holdPiece = null;
     this.canHold = true;
     this.isGameOver = false;
@@ -257,8 +257,8 @@ class TetrisGame {
     this.canHold = true;
     this.drawNextQueue();
 
-    // Comprobar colisión al inicio (Game Over)
-    if (this.checkCollision(this.currentPiece.x, this.currentPiece.y, this.currentPiece.shape)) {
+    // Comprobar colisión al inicio o si los bloques tocaron el techo (Game Over inmediato)
+    if (this.checkCollision(this.currentPiece.x, this.currentPiece.y, this.currentPiece.shape) || this.board[0].some(cell => cell !== 0)) {
       this.triggerGameOver();
     }
   }
@@ -407,17 +407,30 @@ class TetrisGame {
   // Fijar pieza en el tablero
   lockPiece() {
     const { x, y, shape, color, border } = this.currentPiece;
+    let hitCeiling = false;
 
     for (let r = 0; r < shape.length; r++) {
       for (let c = 0; c < shape[r].length; c++) {
         if (shape[r][c]) {
           const boardY = y + r;
           const boardX = x + c;
+
+          // Si el bloque se fija en o por encima de la fila superior (el techo)
+          if (boardY <= 0) {
+            hitCeiling = true;
+          }
+
           if (boardY >= 0 && boardY < this.rows) {
             this.board[boardY][boardX] = { color, border };
           }
         }
       }
+    }
+
+    if (hitCeiling) {
+      this.currentPiece = null;
+      this.triggerGameOver();
+      return;
     }
 
     this.currentPiece = null;
@@ -471,7 +484,7 @@ class TetrisGame {
       const newLevel = Math.floor(this.lines / 10) + 1;
       if (newLevel > this.level) {
         this.level = newLevel;
-        this.dropInterval = Math.max(80, 1000 - (this.level - 1) * 85);
+        this.dropInterval = Math.max(380, 650 - (this.level - 1) * 25);
         this.audio.playLevelUp();
         this.showToast(`¡NIVEL ${this.level}! ⭐`);
       }
@@ -482,11 +495,19 @@ class TetrisGame {
       setTimeout(() => {
         this.collapseLines(fullRows);
         this.clearingLines = [];
-        this.spawnPiece();
+        if (this.board[0].some(cell => cell !== 0)) {
+          this.triggerGameOver();
+        } else {
+          this.spawnPiece();
+        }
       }, 160);
     } else {
       this.combo = -1;
-      this.spawnPiece();
+      if (this.board[0].some(cell => cell !== 0)) {
+        this.triggerGameOver();
+      } else {
+        this.spawnPiece();
+      }
     }
   }
 
@@ -579,6 +600,21 @@ class TetrisGame {
 
   draw() {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+
+    // Línea de Peligro del Techo (Límite para perder)
+    this.ctx.save();
+    this.ctx.strokeStyle = 'rgba(255, 23, 68, 0.65)';
+    this.ctx.lineWidth = 2;
+    this.ctx.setLineDash([5, 4]);
+    this.ctx.beginPath();
+    this.ctx.moveTo(0, this.blockSize);
+    this.ctx.lineTo(this.canvas.width, this.blockSize);
+    this.ctx.stroke();
+
+    this.ctx.font = '7px "Press Start 2P", monospace';
+    this.ctx.fillStyle = 'rgba(255, 23, 68, 0.85)';
+    this.ctx.fillText('▲ TECHO - LÍMITE DERROTA ▲', 12, this.blockSize - 6);
+    this.ctx.restore();
 
     // 1. Tablero fijo
     for (let r = 0; r < this.rows; r++) {
@@ -789,17 +825,14 @@ class TetrisGame {
         this.movePiece(-1);
       } else if (e.key === 'ArrowRight' || key === 'd') {
         this.movePiece(1);
-      } else if (e.key === 'ArrowDown' || key === 's') {
-        this.softDrop();
       } else if (e.key === 'ArrowUp' || key === 'w' || key === 'x') {
         this.rotatePiece(1);
       } else if (key === 'z') {
         this.rotatePiece(-1);
-      } else if (e.key === ' ') {
-        this.hardDrop();
       } else if (key === 'c' || e.key === 'Shift') {
         this.hold();
       }
+      // Nota: Caída 100% automática a velocidad natural. Se bloquea caída manual (flecha abajo/espacio) por solicitud del usuario.
     });
 
     // Botones de la UI
@@ -821,7 +854,7 @@ class TetrisGame {
     document.getElementById('btn-play-again').addEventListener('click', () => this.restart());
   }
 
-  // Controles Táctiles para Móvil
+  // Controles Táctiles para Móvil (Movimiento horizontal, rotaciones y hold)
   initTouchControls() {
     const bindTouch = (id, action, repeat = false) => {
       const el = document.getElementById(id);
@@ -863,10 +896,8 @@ class TetrisGame {
 
     bindTouch('t-btn-left', () => this.movePiece(-1), true);
     bindTouch('t-btn-right', () => this.movePiece(1), true);
-    bindTouch('t-btn-down', () => this.softDrop(), true);
     bindTouch('t-btn-rotate-cw', () => this.rotatePiece(1));
     bindTouch('t-btn-rotate-ccw', () => this.rotatePiece(-1));
-    bindTouch('t-btn-harddrop', () => this.hardDrop());
     bindTouch('t-btn-hold', () => this.hold());
   }
 }

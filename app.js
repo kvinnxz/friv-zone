@@ -47,9 +47,9 @@ const GAMES_CATALOG = [
         controls: [
             { key: 'A / D o ◀ ▶', action: 'Mover pieza lateralmente' },
             { key: 'W / Arriba / X', action: 'Rotar pieza 90° (SRS)' },
-            { key: 'S / Abajo', action: 'Caída suave (Soft drop)' },
-            { key: 'Espacio', action: 'Caída instantánea (Hard drop)' },
-            { key: 'C / Shift', action: 'Guardar pieza (Hold)' }
+            { key: 'Z', action: 'Rotar hacia la izquierda' },
+            { key: 'C / Shift', action: 'Guardar pieza (Hold)' },
+            { key: 'Caída Automática', action: 'Velocidad natural constante' }
         ]
     },
     {
