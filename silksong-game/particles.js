@@ -213,7 +213,7 @@ class ParticleSystem {
       ctx.shadowColor = 'rgba(255, 255, 255, 0.8)';
       ctx.shadowBlur = 10;
       ctx.beginPath();
-      ctx.ellipse(rx, ry, r.width * 2, r.width * 0.6, 0, 0, Math.PI * 2);
+      ctx.ellipse(rx, ry, Math.max(0.5, r.width * 2), Math.max(0.5, r.width * 0.6), 0, 0, Math.PI * 2);
       ctx.fill();
       ctx.restore();
     }
@@ -229,7 +229,7 @@ class ParticleSystem {
       ctx.shadowColor = sw.color;
       ctx.shadowBlur = 8;
       ctx.beginPath();
-      ctx.ellipse(sx, sy, sw.radius, sw.radius * 0.35, 0, 0, Math.PI * 2);
+      ctx.ellipse(sx, sy, Math.max(0.5, sw.radius), Math.max(0.5, sw.radius * 0.35), 0, 0, Math.PI * 2);
       ctx.stroke();
       ctx.restore();
     }

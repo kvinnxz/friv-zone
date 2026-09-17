@@ -198,30 +198,41 @@ class SilksongGame {
       }
     });
 
+    // Touch sound init
+    window.addEventListener('touchstart', () => {
+      if (window.soundEngine) window.soundEngine.init();
+    }, { once: true, passive: true });
+
     // Audio toggle button
     const audioBtn = document.getElementById('audio-toggle-btn');
     if (audioBtn) {
-      audioBtn.addEventListener('click', (e) => {
+      const toggleAudio = (e) => {
         e.stopPropagation();
+        if (e.cancelable) e.preventDefault();
         const muted = window.soundEngine.toggleMute();
         audioBtn.textContent = muted ? '🔇' : '🎵';
-      });
+      };
+      audioBtn.addEventListener('click', toggleAudio);
+      audioBtn.addEventListener('touchend', toggleAudio);
     }
 
     // Modal buttons
     const respawnBtn = document.getElementById('respawn-btn');
     if (respawnBtn) {
       respawnBtn.addEventListener('click', () => this.respawn());
+      respawnBtn.addEventListener('touchend', (e) => { e.preventDefault(); this.respawn(); });
     }
 
     const resumeBtn = document.getElementById('resume-btn');
     if (resumeBtn) {
       resumeBtn.addEventListener('click', () => this.togglePause(false));
+      resumeBtn.addEventListener('touchend', (e) => { e.preventDefault(); this.togglePause(false); });
     }
 
     const restartBtn = document.getElementById('restart-btn');
     if (restartBtn) {
       restartBtn.addEventListener('click', () => location.reload());
+      restartBtn.addEventListener('touchend', (e) => { e.preventDefault(); location.reload(); });
     }
   }
 
@@ -263,9 +274,12 @@ class SilksongGame {
     // On-screen bench rest button
     const benchPrompt = document.getElementById('bench-prompt');
     if (benchPrompt) {
-      benchPrompt.addEventListener('click', () => {
+      const rest = (e) => {
+        if (e && e.cancelable) e.preventDefault();
         if (this.benchNear) this.restAtBench();
-      });
+      };
+      benchPrompt.addEventListener('click', rest);
+      benchPrompt.addEventListener('touchend', rest);
     }
   }
 

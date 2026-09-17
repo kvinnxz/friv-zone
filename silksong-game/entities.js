@@ -764,12 +764,12 @@ class MossWeaverDrone {
     ctx.save();
     // Translucent Insectoid Wings
     ctx.fillStyle = 'rgba(163, 209, 157, 0.4)';
-    const wingSpread = Math.sin(this.time * 6) * 12;
+    const wingY = Math.max(1, 6 + Math.sin(this.time * 6) * 4);
     ctx.beginPath();
-    ctx.ellipse(rx + 8, ry - 6, 14, 6 + wingSpread, -0.4, 0, Math.PI * 2);
+    ctx.ellipse(rx + 8, ry - 6, 14, wingY, -0.4, 0, Math.PI * 2);
     ctx.fill();
     ctx.beginPath();
-    ctx.ellipse(rx + this.w - 8, ry - 6, 14, 6 - wingSpread, 0.4, 0, Math.PI * 2);
+    ctx.ellipse(rx + this.w - 8, ry - 6, 14, wingY, 0.4, 0, Math.PI * 2);
     ctx.fill();
 
     // Moss body
