@@ -522,6 +522,7 @@ class FrivPlatformApp {
                 <div class="card-footer-tags">
                     <span class="card-category-text">${game.categoryLabel}</span>
                     <span class="card-quick-controls">⚡ Instantáneo</span>
+                    <span class="mobile-play-btn">▶ JUGAR</span>
                 </div>
             </div>
         `;
