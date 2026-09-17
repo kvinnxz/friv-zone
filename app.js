@@ -30,6 +30,29 @@ const GAMES_CATALOG = [
         ]
     },
     {
+        id: 'tetris-game',
+        title: 'Tetris Neon Arcade',
+        category: 'arcade',
+        categoryLabel: 'Arcade & Puzzle',
+        path: 'tetris-game/index.html',
+        icon: '🧱',
+        subicon: 'SRS PUZZLE',
+        tag: 'NUEVO',
+        badgeClass: 'badge-new',
+        colorAccent: '#00F0FF',
+        glow: 'rgba(0, 240, 255, 0.45)',
+        gradient: 'linear-gradient(135deg, #051329, #0052cc, #00f0ff)',
+        rating: '5.0 ★',
+        desc: 'El legendario Tetris en versión neón arcade con rotación SRS, retención de piezas (Hold), música Korobeiniki y controles táctiles.',
+        controls: [
+            { key: 'A / D o ◀ ▶', action: 'Mover pieza lateralmente' },
+            { key: 'W / Arriba / X', action: 'Rotar pieza 90° (SRS)' },
+            { key: 'S / Abajo', action: 'Caída suave (Soft drop)' },
+            { key: 'Espacio', action: 'Caída instantánea (Hard drop)' },
+            { key: 'C / Shift', action: 'Guardar pieza (Hold)' }
+        ]
+    },
+    {
         id: 'silksong-game',
         title: 'Silksong: Pharloom Chronicles',
         category: 'action',

@@ -15,6 +15,7 @@ Plataforma interactiva estilo Friv que reúne los mejores juegos arcade, retro, 
 7. **♟️ Royal Master Chess** (`chess-game/`): Ajedrez con IA minimax inteligente, selector de dificultad y tablero dinámico.
 8. **⚡ Neon Surge** (`neon-surge/`): Acción rápida, esquive de obstáculos y ritmo synthwave.
 9. **🏰 Super Mario World Adventure** (`mario-game/`): Otra apasionante aventura de plataformas.
+10. **🧱 Tetris Neon Arcade** (`tetris-game/`): El legendario Tetris arcade con rotación SRS, retención de pieza (Hold), música Korobeiniki y controles táctiles.
 
 ---
 

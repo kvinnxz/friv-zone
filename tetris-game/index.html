@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Tetris Neon Arcade - Friv Zone</title>
+  <meta name="description" content="Juego clásico de Tetris estilo neón arcade con sistema de rotación SRS, retención de piezas (Hold), cola de siguientes piezas, sonido chiptune y controles táctiles para móvil.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Fredoka:wght@600;700&family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="tetris-app">
+    <!-- Atmospheric background effects -->
+    <div class="bg-glow"></div>
+    <div class="stars"></div>
+
+    <!-- Main Game Container -->
+    <div class="game-wrapper">
+      
+      <!-- Left Sidebar: Hold & Level/Lines -->
+      <aside class="side-panel left-panel">
+        <div class="panel-box hold-box">
+          <h2 class="panel-title">GUARDAR</h2>
+          <div class="preview-canvas-wrap">
+            <canvas id="hold-canvas" width="96" height="96"></canvas>
+          </div>
+          <span class="sub-hint">[C] o [Shift]</span>
+        </div>
+
+        <div class="panel-box stats-box">
+          <div class="stat-item">
+            <span class="stat-label">NIVEL</span>
+            <span class="stat-val" id="level-val">1</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">LÍNEAS</span>
+            <span class="stat-val" id="lines-val">0</span>
+          </div>
+        </div>
+
+        <div class="panel-box audio-box">
+          <button id="btn-sound-toggle" class="arcade-mini-btn" title="Silenciar / Activar Sonido">
+            <span id="sound-icon">🔊</span> SONIDO
+          </button>
+          <button id="btn-music-toggle" class="arcade-mini-btn" title="Silenciar / Activar Música Tetris">
+            <span id="music-icon">🎵</span> MÚSICA
+          </button>
+        </div>
+      </aside>
+
+      <!-- Center: Tetris Matrix & Overlays -->
+      <main class="matrix-container">
+        <!-- Banner Header -->
+        <header class="game-header">
+          <h1 class="logo-text">TETRIS<span class="neon-accent">NEON</span></h1>
+        </header>
+
+        <div class="board-frame">
+          <canvas id="tetris-canvas" width="300" height="600"></canvas>
+
+          <!-- Floating Combo / Score Toast -->
+          <div id="combo-toast" class="combo-toast hidden"></div>
+
+          <!-- Pause Overlay -->
+          <div id="pause-overlay" class="game-overlay hidden">
+            <div class="overlay-card">
+              <h2 class="overlay-title">PAUSA</h2>
+              <p class="overlay-msg">Tómate un respiro, el bloque espera.</p>
+              <button id="btn-resume" class="neon-btn primary-btn">CONTINUAR [P]</button>
+              <button id="btn-restart-pause" class="neon-btn secondary-btn">REINICIAR</button>
+            </div>
+          </div>
+
+          <!-- Game Over Overlay -->
+          <div id="gameover-overlay" class="game-overlay hidden">
+            <div class="overlay-card">
+              <h2 class="overlay-title gameover-text">FIN DEL JUEGO</h2>
+              <div class="final-scores">
+                <div class="final-score-item">
+                  <span class="fs-label">PUNTUACIÓN</span>
+                  <span class="fs-val" id="final-score-val">0</span>
+                </div>
+                <div class="final-score-item highlight">
+                  <span class="fs-label">RÉCORD</span>
+                  <span class="fs-val" id="final-best-val">0</span>
+                </div>
+              </div>
+              <button id="btn-play-again" class="neon-btn primary-btn">¡JUGAR DE NUEVO!</button>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Sidebar: Next Queue & Score -->
+      <aside class="side-panel right-panel">
+        <div class="panel-box score-box">
+          <div class="stat-item">
+            <span class="stat-label">PUNTUACIÓN</span>
+            <span class="stat-val score-highlight" id="score-val">0</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-label">RÉCORD</span>
+            <span class="stat-val best-highlight" id="best-val">0</span>
+          </div>
+        </div>
+
+        <div class="panel-box next-box">
+          <h2 class="panel-title">SIGUIENTE</h2>
+          <div class="next-queue-list">
+            <div class="preview-canvas-wrap next-item">
+              <canvas id="next-canvas-1" width="80" height="80"></canvas>
+            </div>
+            <div class="preview-canvas-wrap next-item small">
+              <canvas id="next-canvas-2" width="60" height="60"></canvas>
+            </div>
+            <div class="preview-canvas-wrap next-item small">
+              <canvas id="next-canvas-3" width="60" height="60"></canvas>
+            </div>
+          </div>
+        </div>
+
+        <div class="panel-box mobile-toggle-box">
+          <button id="btn-pause-toggle" class="arcade-mini-btn" title="Pausar Partida">
+            ⏸️ PAUSA
+          </button>
+        </div>
+      </aside>
+
+    </div>
+
+    <!-- On-Screen Virtual Controls for Mobile -->
+    <div id="touch-controls" class="touch-controls" aria-label="Controles táctiles">
+      <div class="touch-cluster touch-left">
+        <button class="t-btn t-btn-dpad" id="t-btn-left" aria-label="Mover a la Izquierda">◀</button>
+        <button class="t-btn t-btn-dpad" id="t-btn-down" aria-label="Caída Suave">▼</button>
+        <button class="t-btn t-btn-dpad" id="t-btn-right" aria-label="Mover a la Derecha">▶</button>
+      </div>
+
+      <div class="touch-cluster touch-center">
+        <button class="t-btn t-btn-util" id="t-btn-hold" aria-label="Guardar Pieza">🔄 HOLD</button>
+      </div>
+
+      <div class="touch-cluster touch-right">
+        <button class="t-btn t-btn-action t-btn-rotate" id="t-btn-rotate-ccw" aria-label="Rotar Izquierda">↺</button>
+        <button class="t-btn t-btn-action t-btn-rotate primary" id="t-btn-rotate-cw" aria-label="Rotar Derecha">↻</button>
+        <button class="t-btn t-btn-action t-btn-drop" id="t-btn-harddrop" aria-label="Caída Instantánea">⚡ CAER</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
