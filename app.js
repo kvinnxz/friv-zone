@@ -30,6 +30,27 @@ const GAMES_CATALOG = [
         ]
     },
     {
+        id: 'donkey-kong',
+        title: 'Donkey Kong Arcade 1981',
+        category: 'arcade',
+        categoryLabel: 'Arcade Clásico',
+        path: 'donkey-kong/index.html',
+        icon: '🦍',
+        subicon: '50M ELEVATORS',
+        tag: 'HOT',
+        badgeClass: 'badge-hot',
+        colorAccent: '#FF1E27',
+        glow: 'rgba(255, 30, 39, 0.45)',
+        gradient: 'linear-gradient(135deg, #420b0d, #b71c1c, #ff5252)',
+        rating: '5.0 ★',
+        desc: 'El legendario arcade original con Mario (Jumpman), Pauline pidiendo auxilio, Donkey Kong, montacargas móviles, escaleras y bolas de fuego.',
+        controls: [
+            { key: 'A / D o ◀ ▶', action: 'Mover a Mario' },
+            { key: 'W / S o ▲ ▼', action: 'Subir y bajar escaleras' },
+            { key: 'Espacio / Z', action: 'Saltar vigas y peligros' }
+        ]
+    },
+    {
         id: 'tetris-game',
         title: 'Tetris Neon Arcade',
         category: 'arcade',

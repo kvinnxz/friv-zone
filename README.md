@@ -16,6 +16,7 @@ Plataforma interactiva estilo Friv que reúne los mejores juegos arcade, retro, 
 8. **⚡ Neon Surge** (`neon-surge/`): Acción rápida, esquive de obstáculos y ritmo synthwave.
 9. **🏰 Super Mario World Adventure** (`mario-game/`): Otra apasionante aventura de plataformas.
 10. **🧱 Tetris Neon Arcade** (`tetris-game/`): El legendario Tetris arcade con rotación SRS, retención de pieza (Hold), música Korobeiniki y controles táctiles.
+11. **🦍 Donkey Kong Arcade 1981** (`donkey-kong/`): El clásico arcade con nivel de elevadores 50m, Jumpman (Mario), Pauline, montacargas móviles, escaleras y bolas de fuego.
 
 ---
 

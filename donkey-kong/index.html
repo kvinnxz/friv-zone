@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>Donkey Kong Arcade 1981 - Elevators & Barrels</title>
+  <meta name="description" content="Recreación fiel del legendario arcade Donkey Kong (1981) de Nintendo con Mario/Jumpman, Donkey Kong, Pauline, nivel de elevadores, barriles rodantes, audio chiptune y controles táctiles.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Chakra+Petch:wght@700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="arcade-cabinet">
+    <!-- Arcade Bezel & Header -->
+    <div class="cabinet-header">
+      <div class="marquee-title">DONKEY KONG<span class="trademark">™</span></div>
+    </div>
+
+    <!-- Main Game Screen Canvas Container -->
+    <div class="screen-frame">
+      <div class="crt-overlay"></div>
+      <canvas id="gameCanvas" width="448" height="512"></canvas>
+
+      <!-- Interactive Overlays -->
+      <div id="pause-overlay" class="screen-overlay hidden">
+        <div class="overlay-modal">
+          <h2>PAUSA</h2>
+          <p>Presiona [P] o el botón para continuar</p>
+          <button id="btn-resume" class="arcade-btn">CONTINUAR</button>
+          <button id="btn-restart-pause" class="arcade-btn secondary">REINICIAR</button>
+        </div>
+      </div>
+
+      <div id="gameover-overlay" class="screen-overlay hidden">
+        <div class="overlay-modal">
+          <h2 class="danger-text">GAME OVER</h2>
+          <div class="modal-stats">
+            <div>PUNTOS: <span id="final-score">0</span></div>
+            <div>RÉCORD: <span id="final-best">0</span></div>
+          </div>
+          <button id="btn-play-again" class="arcade-btn">JUGAR DE NUEVO</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Top Floating Toolbar for Sound and Pause -->
+    <div class="cabinet-toolbar">
+      <button id="btn-toggle-sound" class="tool-btn" title="Sonido On/Off">🔊 SONIDO</button>
+      <button id="btn-toggle-pause" class="tool-btn" title="Pausa">⏸️ PAUSA</button>
+    </div>
+
+    <!-- Touch / Virtual Controls for Mobile -->
+    <div id="virtual-controls" class="virtual-controls">
+      <div class="dpad-container">
+        <button class="v-btn v-btn-up" id="vbtn-up" aria-label="Subir escalera">▲</button>
+        <div class="dpad-middle-row">
+          <button class="v-btn v-btn-left" id="vbtn-left" aria-label="Mover a la izquierda">◀</button>
+          <div class="dpad-center"></div>
+          <button class="v-btn v-btn-right" id="vbtn-right" aria-label="Mover a la derecha">▶</button>
+        </div>
+        <button class="v-btn v-btn-down" id="vbtn-down" aria-label="Bajar escalera">▼</button>
+      </div>
+
+      <div class="action-btn-container">
+        <button class="v-btn v-btn-jump" id="vbtn-jump" aria-label="Saltar">
+          <span>SALTAR</span>
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>
