@@ -1,0 +1,322 @@
+/* Retro Arcade Styling for Super Mario Bros */
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
+:root {
+    --bg-dark: #0f111a;
+    --arcade-frame: #1b1e2e;
+    --arcade-border: #3b4261;
+    --gold: #fcd844;
+    --mario-red: #d82800;
+    --mario-blue: #3b82f6;
+    --text-color: #ffffff;
+    --neon-glow: rgba(216, 40, 0, 0.4);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+body {
+    background-color: var(--bg-dark);
+    color: var(--text-color);
+    font-family: 'Press Start 2P', monospace, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow-x: hidden;
+    padding: 12px;
+}
+
+/* Cabinet Container */
+.arcade-cabinet {
+    position: relative;
+    background: var(--arcade-frame);
+    border: 4px solid var(--arcade-border);
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 25px var(--neon-glow);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    max-width: 820px;
+    width: 100%;
+}
+
+/* Header Bar */
+.arcade-header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 12px;
+    padding: 0 8px;
+}
+
+.cabinet-title {
+    font-size: 14px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    text-shadow: 2px 2px #000;
+}
+
+.header-controls {
+    display: flex;
+    gap: 8px;
+}
+
+.retro-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    background: #282c3f;
+    color: #fff;
+    border: 2px solid #565f89;
+    border-radius: 6px;
+    padding: 8px 12px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    text-shadow: 1px 1px #000;
+}
+
+.retro-btn:hover {
+    background: var(--mario-red);
+    border-color: #ff5533;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(216, 40, 0, 0.5);
+}
+
+.retro-btn:active {
+    transform: translateY(0);
+}
+
+/* Screen Wrapper */
+.screen-wrapper {
+    position: relative;
+    width: 100%;
+    max-width: 768px; /* 256 * 3 */
+    aspect-ratio: 256 / 240;
+    background-color: #6B8CFF;
+    border: 4px solid #000;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: inset 0 0 15px rgba(0, 0, 0, 0.6);
+}
+
+/* CRT Scanline Effect Overlay */
+.scanlines {
+    pointer-events: none;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        rgba(18, 16, 16, 0) 50%, 
+        rgba(0, 0, 0, 0.25) 50%
+    );
+    background-size: 100% 4px;
+    z-index: 10;
+    opacity: 0.65;
+}
+
+/* Canvas Crisp Scaling */
+#gameCanvas {
+    width: 100%;
+    height: 100%;
+    display: block;
+    image-rendering: -moz-crisp-edges;
+    image-rendering: -webkit-crisp-edges;
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+}
+
+/* Retro HUD */
+.hud-bar {
+    position: absolute;
+    top: 10px;
+    left: 0;
+    width: 100%;
+    display: flex;
+    justify-content: space-around;
+    padding: 0 12px;
+    font-size: clamp(8px, 1.8vw, 13px);
+    color: #ffffff;
+    text-shadow: 2px 2px #000000;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.hud-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+}
+
+.coin-box {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.hud-coin-icon {
+    display: inline-block;
+    width: 10px;
+    height: 12px;
+    background: var(--gold);
+    border: 1px solid #7c5800;
+    border-radius: 2px;
+}
+
+/* Game Overlays (Title, Win, GameOver, Pause) */
+.overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 16px;
+    z-index: 20;
+    text-align: center;
+    padding: 20px;
+}
+
+.overlay.hidden {
+    display: none !important;
+}
+
+.title-logo {
+    font-size: clamp(16px, 3.8vw, 32px);
+    color: var(--mario-red);
+    text-shadow: 3px 3px var(--gold), 6px 6px #000;
+    line-height: 1.3;
+    margin-bottom: 8px;
+}
+
+.title-subtitle {
+    font-size: clamp(10px, 2vw, 14px);
+    color: #fff;
+    margin-bottom: 12px;
+}
+
+.action-btn-large {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(10px, 2.2vw, 15px);
+    background: var(--mario-red);
+    color: #fff;
+    border: 3px solid #ffaa00;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    box-shadow: 0 6px 0 #7a1500, 0 8px 15px rgba(0,0,0,0.5);
+    transition: all 0.1s ease;
+}
+
+.action-btn-large:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 0 #7a1500, 0 10px 20px rgba(216,40,0,0.4);
+}
+
+.action-btn-large:active {
+    transform: translateY(4px);
+    box-shadow: 0 2px 0 #7a1500;
+}
+
+.instructions-card {
+    background: rgba(255, 255, 255, 0.08);
+    border: 2px dashed #666;
+    border-radius: 8px;
+    padding: 12px;
+    max-width: 440px;
+    font-size: clamp(7px, 1.4vw, 10px);
+    line-height: 1.8;
+    color: #ddd;
+    margin-top: 8px;
+}
+
+.key-badge {
+    background: #333;
+    color: var(--gold);
+    padding: 2px 6px;
+    border-radius: 4px;
+    border: 1px solid #777;
+}
+
+/* Touch Controls for Mobile / Tablets */
+.touch-controls {
+    width: 100%;
+    max-width: 768px;
+    margin-top: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 12px;
+}
+
+.touch-dpad {
+    display: flex;
+    gap: 12px;
+}
+
+.touch-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.touch-btn {
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    background: #252839;
+    border: 3px solid #4a5270;
+    color: #ffffff;
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 5px 0 #151722;
+    cursor: pointer;
+    touch-action: manipulation;
+    transition: transform 0.05s, background 0.05s;
+}
+
+.touch-btn:active {
+    transform: translateY(4px);
+    box-shadow: 0 1px 0 #151722;
+    background: #393e56;
+}
+
+.touch-btn.btn-a {
+    background: #c82000;
+    border-color: #ff6644;
+    box-shadow: 0 5px 0 #6e1000;
+}
+
+.touch-btn.btn-b {
+    background: #0088cc;
+    border-color: #44bbff;
+    box-shadow: 0 5px 0 #004c73;
+}
+
+/* Responsive Scaling */
+@media (max-width: 600px) {
+    .arcade-cabinet {
+        padding: 8px;
+    }
+    .touch-btn {
+        width: 48px;
+        height: 48px;
+        font-size: 11px;
+    }
+}

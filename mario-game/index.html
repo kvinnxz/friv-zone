@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Mario Bros - Retro Web Edition</title>
+    <meta name="description" content="Juego clásico de Super Mario Bros recreado fielmente en HTML5 Canvas con sonido 8-bit chiptune y física retro.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="arcade-cabinet">
+        <header class="arcade-header">
+            <div class="cabinet-title">★ SUPER MARIO BROS ★</div>
+            <div class="header-controls">
+                <button id="muteBtn" class="retro-btn">🔊 SONIDO: ON</button>
+            </div>
+        </header>
+
+        <div class="screen-wrapper">
+            <!-- Retro NES HUD -->
+            <div class="hud-bar">
+                <div class="hud-item">
+                    <span>MARIO</span>
+                    <span id="hudScore">000000</span>
+                </div>
+                <div class="hud-item">
+                    <span>COINS</span>
+                    <div class="coin-box">
+                        <span class="hud-coin-icon"></span>
+                        <span id="hudCoins">x00</span>
+                    </div>
+                </div>
+                <div class="hud-item">
+                    <span>WORLD</span>
+                    <span id="hudWorld">1-1</span>
+                </div>
+                <div class="hud-item">
+                    <span>TIME</span>
+                    <span id="hudTime">400</span>
+                </div>
+                <div class="hud-item">
+                    <span>LIVES</span>
+                    <span id="hudLives">x3</span>
+                </div>
+            </div>
+
+            <!-- Canvas Element (256x240 Native NES Resolution) -->
+            <canvas id="gameCanvas" width="256" height="240"></canvas>
+
+            <!-- CRT scanlines overlay -->
+            <div class="scanlines"></div>
+
+            <!-- Title Screen Overlay -->
+            <div id="titleScreen" class="overlay">
+                <h1 class="title-logo">SUPER MARIO BROS</h1>
+                <p class="title-subtitle">★ WEB RETRO EDITION ★</p>
+                <button id="startBtn" class="action-btn-large">JUGAR (START)</button>
+                <div class="instructions-card">
+                    <p><span class="key-badge">←</span> <span class="key-badge">→</span> o <span class="key-badge">A</span> <span class="key-badge">D</span> : Moverse</p>
+                    <p><span class="key-badge">ESPACIO</span> / <span class="key-badge">↑</span> / <span class="key-badge">Z</span> : Saltar (Mantén para salto alto)</p>
+                    <p><span class="key-badge">SHIFT</span> / <span class="key-badge">X</span> : Correr rápido</p>
+                    <p><span class="key-badge">P</span> o <span class="key-badge">ESC</span> : Pausar</p>
+                </div>
+            </div>
+
+            <!-- Pause Screen Overlay -->
+            <div id="pauseScreen" class="overlay hidden">
+                <h2 class="title-logo">JUEGO PAUSADO</h2>
+                <button id="resumeBtn" class="action-btn-large">CONTINUAR</button>
+            </div>
+
+            <!-- Game Over Overlay -->
+            <div id="gameOverScreen" class="overlay hidden">
+                <h2 class="title-logo" style="color: #ff3333;">GAME OVER</h2>
+                <p style="color: #ddd; font-size: 11px;">¿Quieres intentarlo de nuevo?</p>
+                <button class="action-btn-large restart-btn">REINTENTAR</button>
+            </div>
+
+            <!-- Course Clear / Win Screen Overlay -->
+            <div id="winScreen" class="overlay hidden">
+                <h2 class="title-logo" style="color: #fcd844;">¡ETAPA SUPERADA!</h2>
+                <p style="color: #ffffff; font-size: 11px; line-height: 1.6;">
+                    ¡Felicitaciones!<br>Completaste el Mundo 1-1 con éxito.
+                </p>
+                <button class="action-btn-large restart-btn">VOLVER A JUGAR</button>
+            </div>
+        </div>
+
+        <!-- Virtual Controls for Mobile / Touch Devices -->
+        <div class="touch-controls">
+            <div class="touch-dpad">
+                <button id="btnLeft" class="touch-btn">◀</button>
+                <button id="btnRight" class="touch-btn">▶</button>
+            </div>
+            <div class="touch-actions">
+                <button id="btnB" class="touch-btn btn-b" title="Correr">B</button>
+                <button id="btnA" class="touch-btn btn-a" title="Saltar">A</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Scripts -->
+    <script src="src/audio.js"></script>
+    <script src="src/sprites.js"></script>
+    <script src="src/physics.js"></script>
+    <script src="src/level.js"></script>
+    <script src="src/game.js"></script>
+</body>
+</html>

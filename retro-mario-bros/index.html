@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Super Mario Bros - Retro NES Edition (100% Canvas)</title>
+    <meta name="description" content="Juego de plataformas 2D estilo retro NES inspirado en Super Mario Bros. Desarrollado desde cero con HTML5 Canvas, físicas AABB y audio 8-bit.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <main class="arcade-container">
+        <!-- Cabecera de la máquina arcade -->
+        <header class="cabinet-marquee">
+            <div class="marquee-lights left"></div>
+            <h1 class="marquee-title">★ SUPER MARIO BROS ★</h1>
+            <div class="marquee-lights right"></div>
+        </header>
+
+        <!-- Marco de pantalla CRT -->
+        <div class="crt-bezel">
+            <!-- Barra Superior HUD Clásica NES -->
+            <div id="hud" class="nes-hud">
+                <div class="hud-col">
+                    <div class="hud-label">MARIO</div>
+                    <div id="hudScore" class="hud-val">000000</div>
+                </div>
+                <div class="hud-col">
+                    <div class="hud-label">&nbsp;</div>
+                    <div class="hud-coins">
+                        <span class="hud-coin-icon"></span>
+                        <span id="hudCoins" class="hud-val">x00</span>
+                    </div>
+                </div>
+                <div class="hud-col">
+                    <div class="hud-label">WORLD</div>
+                    <div id="hudWorld" class="hud-val">1-1</div>
+                </div>
+                <div class="hud-col">
+                    <div class="hud-label">TIME</div>
+                    <div id="hudTime" class="hud-val">400</div>
+                </div>
+                <div class="hud-col">
+                    <div class="hud-label">LIVES</div>
+                    <div id="hudLives" class="hud-val">x3</div>
+                </div>
+            </div>
+
+            <!-- Contenedor del Canvas con resolución interna fija 256x240 -->
+            <div class="canvas-wrapper">
+                <canvas id="gameCanvas" width="256" height="240"></canvas>
+                
+                <!-- Efecto Scanlines de monitor de tubo CRT -->
+                <div id="scanlines" class="crt-scanlines"></div>
+
+                <!-- Pantalla de Inicio / Título -->
+                <div id="titleScreen" class="game-screen active">
+                    <div class="title-logo">
+                        <span class="logo-super">SUPER</span>
+                        <span class="logo-mario">MARIO BROS.</span>
+                    </div>
+                    <div class="title-credits">© 1985 / 2026 RETRO EDITION</div>
+                    <div class="title-prompt blink">PRESIONA ENTER O HAZ CLIC</div>
+                    <button id="startBtn" class="nes-btn nes-btn-gold">START GAME</button>
+                    
+                    <div class="instructions-panel">
+                        <p class="inst-row"><span class="btn-key">A</span> / <span class="btn-key">D</span> o <span class="btn-key">◀</span> <span class="btn-key">▶</span> : Correr</p>
+                        <p class="inst-row"><span class="btn-key">W</span> / <span class="btn-key">▲</span> / <span class="btn-key">ESPACIO</span> : Saltar (mantén para altura)</p>
+                        <p class="inst-row"><span class="btn-key">SHIFT</span> : Aceleración turbo / Carrera</p>
+                    </div>
+                </div>
+
+                <!-- Pantalla de Pausa -->
+                <div id="pauseScreen" class="game-screen hidden">
+                    <div class="screen-box">
+                        <h2 class="pause-title">PAUSA</h2>
+                        <p class="blink">PRESIONA 'P' O ESC PARA CONTINUAR</p>
+                        <button id="resumeBtn" class="nes-btn">CONTINUAR</button>
+                    </div>
+                </div>
+
+                <!-- Pantalla de Game Over -->
+                <div id="gameOverScreen" class="game-screen hidden">
+                    <div class="screen-box">
+                        <h2 class="game-over-title">GAME OVER</h2>
+                        <p id="finalScoreText">PUNTOS: 000000</p>
+                        <button id="restartBtn" class="nes-btn nes-btn-red">REINTENTAR</button>
+                    </div>
+                </div>
+
+                <!-- Pantalla de Victoria / Fin de Nivel -->
+                <div id="victoryScreen" class="game-screen hidden">
+                    <div class="screen-box">
+                        <h2 class="victory-title">¡ETAPA SUPERADA!</h2>
+                        <p>¡FELICITACIONES!</p>
+                        <p id="victoryScoreText">PUNTUACIÓN FINAL: 000000</p>
+                        <button id="playAgainBtn" class="nes-btn nes-btn-gold">VOLVER A JUGAR</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controles en la barra de cabina inferior -->
+            <div class="cabinet-controls-bar">
+                <button id="audioToggleBtn" class="mini-btn">🔊 SONIDO: ON</button>
+                <button id="crtToggleBtn" class="mini-btn">📺 CRT: ON</button>
+                <button id="resetLevelBtn" class="mini-btn">🔄 REINICIAR</button>
+                <button id="fullscreenBtn" class="mini-btn">⛶ PANTALLA COMPLETA</button>
+            </div>
+        </div>
+
+        <!-- Panel de control táctil para móviles y pantallas táctiles -->
+        <div id="touchControls" class="touch-controls">
+            <div class="touch-dpad">
+                <button id="touchLeft" class="touch-btn">◀</button>
+                <button id="touchRight" class="touch-btn">▶</button>
+            </div>
+            <div class="touch-action">
+                <button id="touchRun" class="touch-btn round-btn run-btn">B</button>
+                <button id="touchJump" class="touch-btn round-btn jump-btn">A</button>
+            </div>
+        </div>
+    </main>
+
+    <!-- Scripts modulares del juego -->
+    <script src="src/audio.js"></script>
+    <script src="src/sprites.js"></script>
+    <script src="src/physics.js"></script>
+    <script src="src/entities.js"></script>
+    <script src="src/level.js"></script>
+    <script src="src/game.js"></script>
+</body>
+</html>

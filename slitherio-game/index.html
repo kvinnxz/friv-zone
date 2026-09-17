@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Neon Slither - Juego Slither.io Multijugador Neón</title>
+    <meta name="description" content="Juega a Neon Slither, una versión futurista y fluida de Slither.io con físicas dinámicas, bots inteligentes, aceleración turbo y gráficos de neón.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+    <!-- Canvas Principal del Juego -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Overlay de Interfaz de Usuario (HUD) -->
+    <div id="hudOverlay" class="hud-container hidden">
+        <!-- Superior Izquierda: Controles / Audio -->
+        <div class="hud-top-left">
+            <button id="muteBtn" class="icon-btn" title="Activar/Desactivar Sonido" aria-label="Silenciar sonido">🔊</button>
+        </div>
+
+        <!-- Superior Derecha: Tabla de Clasificación -->
+        <div id="hudLeaderboard" class="hud-leaderboard">
+            <div class="leaderboard-title">Clasificación Top 10</div>
+            <ul id="leaderboardList" class="leaderboard-list">
+                <!-- Se llena dinámicamente -->
+            </ul>
+        </div>
+
+        <!-- Inferior Izquierda: Estadísticas de Longitud y Turbo -->
+        <div class="hud-bottom-left">
+            <div class="hud-stat">
+                <span class="stat-label">Longitud</span>
+                <span id="hudLength" class="stat-value">0</span>
+            </div>
+            <div class="hud-stat">
+                <span class="stat-label">Posición</span>
+                <span id="hudRank" class="stat-value">#1</span>
+            </div>
+            <div class="hud-stat">
+                <span class="stat-label">Bajas (Kills)</span>
+                <span id="hudKills" class="stat-value">0</span>
+            </div>
+            <div class="boost-meter-container">
+                <div class="boost-label">
+                    <span>Turbo</span>
+                    <span>Espacio / Clic</span>
+                </div>
+                <div class="boost-track">
+                    <div id="boostFill" class="boost-fill"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Inferior Derecha: Minimapa Radar -->
+        <div class="hud-bottom-right">
+            <canvas id="minimapCanvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Pantalla de Inicio / Menú Principal -->
+    <div id="startScreen" class="modal-overlay">
+        <div class="start-card">
+            <div class="logo-container">
+                <h1 class="logo-title">SLITHER.IO</h1>
+                <div class="logo-subtitle">Neon Arena 2026</div>
+            </div>
+
+            <div class="input-group">
+                <label for="nicknameInput" class="input-label">Tu Apodo</label>
+                <input type="text" id="nicknameInput" class="input-field" placeholder="Escribe tu apodo..." maxlength="15" value="NeonPlayer">
+            </div>
+
+            <div class="skin-selector">
+                <label class="input-label">Selecciona tu Skin</label>
+                <div id="skinList" class="skin-list">
+                    <!-- Se genera por JavaScript -->
+                </div>
+            </div>
+
+            <button id="playBtn" class="btn-play">¡Entrar a la Arena!</button>
+
+            <div class="controls-hint">
+                <p>🖱️ <strong>Ratón:</strong> Mueve el cursor para dirigir la serpiente</p>
+                <p>⚡ <strong>Clic Izq / Espacio:</strong> Turbo acelerador (gasta masa)</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Fin de Partida (Game Over) -->
+    <div id="gameOverModal" class="modal-overlay hidden">
+        <div class="gameover-card">
+            <h2 class="gameover-title">¡Has Sido Eliminado!</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-box">
+                    <div class="box-label">Puntuación Final</div>
+                    <div id="finalScore" class="box-value">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="box-label">Bajas Logradas</div>
+                    <div id="finalKills" class="box-value">0</div>
+                </div>
+                <div class="stat-box">
+                    <div class="box-label">Supervivencia</div>
+                    <div id="finalTime" class="box-value">0s</div>
+                </div>
+                <div class="stat-box">
+                    <div class="box-label">Posición Final</div>
+                    <div id="finalRank" class="box-value">#1</div>
+                </div>
+            </div>
+
+            <button id="restartBtn" class="btn-restart">Jugar Otra Vez</button>
+        </div>
+    </div>
+
+    <!-- Script de Inicialización -->
+    <script type="module">
+        import { GameEngine } from './src/game.js';
+        import { SKINS } from './src/snake.js';
+
+        let selectedSkinIndex = 0;
+        const game = new GameEngine();
+
+        // Renderizar selector de skins
+        const skinListContainer = document.getElementById('skinList');
+        skinListContainer.innerHTML = SKINS.map((skin, idx) => `
+            <div class="skin-card ${idx === 0 ? 'active' : ''}" data-index="${idx}">
+                <div class="skin-preview">
+                    ${skin.colors.slice(0, 4).map(c => `<div class="skin-dot" style="background-color: ${c}"></div>`).join('')}
+                </div>
+                <div class="skin-name">${skin.name}</div>
+            </div>
+        `).join('');
+
+        // Eventos de selección de skin
+        const skinCards = document.querySelectorAll('.skin-card');
+        skinCards.forEach(card => {
+            card.addEventListener('click', () => {
+                skinCards.forEach(c => c.classList.remove('active'));
+                card.classList.add('active');
+                selectedSkinIndex = parseInt(card.dataset.index, 10);
+            });
+        });
+
+        // Botón de Inicio
+        const playBtn = document.getElementById('playBtn');
+        const nicknameInput = document.getElementById('nicknameInput');
+
+        function startGame() {
+            const nickname = nicknameInput.value.trim() || 'NeonPlayer';
+            game.start(nickname, selectedSkinIndex);
+        }
+
+        playBtn.addEventListener('click', startGame);
+        nicknameInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') startGame();
+        });
+
+        // Botón de Reinicio
+        const restartBtn = document.getElementById('restartBtn');
+        restartBtn.addEventListener('click', () => {
+            const nickname = nicknameInput.value.trim() || 'NeonPlayer';
+            game.start(nickname, selectedSkinIndex);
+        });
+    </script>
+</body>
+</html>

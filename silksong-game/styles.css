@@ -1,0 +1,604 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Outfit:wght@300;400;600;700&display=swap');
+
+:root {
+  --bg-dark: #0a090e;
+  --bg-panel: rgba(14, 13, 20, 0.85);
+  --crimson: #c72c41;
+  --crimson-glow: rgba(199, 44, 65, 0.6);
+  --silk-white: #f3f5f8;
+  --silk-gold: #f4d06f;
+  --silk-gold-glow: rgba(244, 208, 111, 0.6);
+  --bell-brass: #d4a373;
+  --moss-green: #3a5a40;
+  --moss-light: #588157;
+  --text-primary: #e6e8ec;
+  --text-muted: #8d939e;
+  --border-ornate: rgba(212, 163, 115, 0.4);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  user-select: none;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-primary);
+  font-family: 'Cinzel', serif;
+  overflow: hidden;
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#game-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  background: radial-gradient(circle at center, #14141c 0%, #08080c 100%);
+  overflow: hidden;
+}
+
+canvas#gameCanvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  image-rendering: auto;
+}
+
+/* Atmospheric Vignette & Grain */
+.vignette-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  background: radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.85) 100%);
+  box-shadow: inset 0 0 100px rgba(0, 0, 0, 0.7);
+  z-index: 5;
+}
+
+/* HUD Top Left: Hornet Health & Silk Spool */
+#hud {
+  position: absolute;
+  top: 24px;
+  left: 32px;
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Silk Spool (Carrete de Seda de Hornet) */
+.silk-spool-container {
+  position: relative;
+  width: 76px;
+  height: 76px;
+  background: radial-gradient(circle, #25121b 0%, #0d080e 90%);
+  border-radius: 50%;
+  border: 3px solid #734854;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.9), inset 0 0 12px rgba(0, 0, 0, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: all 0.3s ease;
+}
+
+.silk-spool-container.full-silk {
+  border-color: var(--silk-gold);
+  box-shadow: 0 0 25px var(--silk-gold-glow), inset 0 0 15px rgba(244, 208, 111, 0.4);
+  animation: spool-pulse 1.4s infinite ease-in-out;
+}
+
+@keyframes spool-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 8px var(--silk-gold)); }
+  50% { transform: scale(1.06); filter: drop-shadow(0 0 18px var(--silk-gold)); }
+}
+
+.silk-gauge-canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.silk-spool-icon {
+  position: relative;
+  z-index: 2;
+  font-size: 26px;
+  color: var(--silk-white);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.7);
+}
+
+.silk-bind-hint {
+  position: absolute;
+  bottom: -22px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(199, 44, 65, 0.9);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 4px;
+  letter-spacing: 1px;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  white-space: nowrap;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.silk-spool-container.full-silk .silk-bind-hint {
+  opacity: 1;
+  animation: bind-bounce 1s infinite alternate ease-in-out;
+}
+
+@keyframes bind-bounce {
+  from { transform: translateX(-50%) translateY(0); }
+  to { transform: translateX(-50%) translateY(3px); }
+}
+
+/* Hornet Masks (Health) */
+.masks-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.masks-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.mask-icon {
+  width: 26px;
+  height: 34px;
+  position: relative;
+  transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.mask-icon.lost {
+  opacity: 0.25;
+  filter: grayscale(1) brightness(0.6);
+  transform: scale(0.85);
+}
+
+.mask-icon.healing {
+  animation: mask-restore 0.5s ease-out;
+}
+
+@keyframes mask-restore {
+  0% { transform: scale(1.4); filter: drop-shadow(0 0 15px #fff); }
+  100% { transform: scale(1); filter: none; }
+}
+
+/* Top Right: Rosaries & Area Name */
+#top-right-hud {
+  position: absolute;
+  top: 24px;
+  right: 32px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 8px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+.rosary-counter {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--bg-panel);
+  padding: 6px 14px;
+  border-radius: 20px;
+  border: 1px solid var(--border-ornate);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--silk-gold);
+}
+
+.rosary-bead {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #fff2a3, #d4a373, #7a4f22);
+  box-shadow: 0 0 8px rgba(244, 208, 111, 0.7);
+}
+
+.area-banner {
+  font-size: 13px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  color: var(--text-muted);
+  text-shadow: 0 2px 5px rgba(0, 0, 0, 0.8);
+  transition: all 0.5s ease;
+}
+
+/* Boss Health Bar Overlay */
+#boss-hud {
+  position: absolute;
+  bottom: 40px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 580px;
+  max-width: 90vw;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.6s ease, transform 0.6s cubic-bezier(0.2, 0.9, 0.3, 1);
+}
+
+#boss-hud.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+.boss-title-container {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.boss-title {
+  font-size: 17px;
+  letter-spacing: 4px;
+  color: #f1dfbf;
+  text-transform: uppercase;
+  font-weight: 700;
+  text-shadow: 0 0 10px rgba(212, 163, 115, 0.6);
+}
+
+.boss-subtitle {
+  font-size: 11px;
+  letter-spacing: 2px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+}
+
+.boss-bar-frame {
+  position: relative;
+  width: 100%;
+  height: 16px;
+  background: #110d14;
+  border: 2px solid #5a3d46;
+  border-radius: 3px;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.8), inset 0 0 10px rgba(0, 0, 0, 0.9);
+  overflow: hidden;
+}
+
+.boss-bar-fill {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #8a1928, #c72c41, #ff5757);
+  box-shadow: 0 0 12px var(--crimson-glow);
+  transition: width 0.25s ease-out;
+}
+
+.boss-bar-ghost {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(244, 208, 111, 0.45);
+  transition: width 0.6s ease-out;
+  pointer-events: none;
+}
+
+/* Modals & Screens: Controls, Pause, Game Over, Victory */
+.game-overlay-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(8, 7, 12, 0.88);
+  backdrop-filter: blur(8px);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  z-index: 20;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.4s ease;
+}
+
+.game-overlay-screen.active {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.silksong-modal-card {
+  background: radial-gradient(circle at 50% 20%, #1c131a 0%, #0f0b12 90%);
+  border: 2px solid var(--border-ornate);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.9), 0 0 30px rgba(199, 44, 65, 0.25);
+  padding: 38px 48px;
+  border-radius: 12px;
+  max-width: 620px;
+  width: 90%;
+  text-align: center;
+  position: relative;
+}
+
+.silksong-modal-card::before {
+  content: '';
+  position: absolute;
+  top: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 16px;
+  background: #d4a373;
+  clip-path: polygon(50% 0%, 100% 100%, 0% 100%);
+  filter: drop-shadow(0 0 8px rgba(212, 163, 115, 0.7));
+}
+
+.screen-title {
+  font-size: 34px;
+  letter-spacing: 6px;
+  color: #fff;
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  text-shadow: 0 0 20px rgba(255, 255, 255, 0.5), 0 0 35px var(--crimson-glow);
+}
+
+.screen-title.crimson {
+  color: #ff5252;
+  text-shadow: 0 0 25px rgba(255, 82, 82, 0.8);
+}
+
+.screen-title.victory {
+  color: #f7d070;
+  text-shadow: 0 0 25px rgba(247, 208, 112, 0.9);
+}
+
+.screen-desc {
+  font-family: 'Outfit', sans-serif;
+  color: var(--text-muted);
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 28px;
+}
+
+/* Control Badges Grid */
+.controls-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  text-align: left;
+  font-family: 'Outfit', sans-serif;
+  margin-bottom: 30px;
+}
+
+.control-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.04);
+  padding: 8px 14px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.key-badge {
+  background: #2b1f28;
+  border: 1px solid #734854;
+  padding: 3px 9px;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--silk-gold);
+  letter-spacing: 1px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+}
+
+.control-name {
+  font-size: 13px;
+  color: #d1d5db;
+}
+
+.btn-silksong {
+  background: linear-gradient(135deg, #a72335 0%, #701421 100%);
+  color: #fff;
+  border: 1px solid #ff6e80;
+  font-family: 'Cinzel', serif;
+  font-size: 16px;
+  letter-spacing: 3px;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 12px 34px;
+  border-radius: 6px;
+  cursor: pointer;
+  box-shadow: 0 4px 20px rgba(167, 35, 53, 0.5);
+  transition: all 0.25s ease;
+}
+
+.btn-silksong:hover {
+  transform: translateY(-2px);
+  background: linear-gradient(135deg, #c72c41 0%, #8a1928 100%);
+  box-shadow: 0 6px 28px rgba(220, 50, 70, 0.7);
+}
+
+.btn-silksong:active {
+  transform: translateY(1px);
+}
+
+/* Bench prompt */
+#bench-prompt {
+  position: absolute;
+  bottom: 120px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: var(--bg-panel);
+  border: 1px solid var(--border-ornate);
+  color: var(--silk-gold);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-size: 13px;
+  letter-spacing: 2px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  z-index: 10;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+#bench-prompt.visible {
+  opacity: 1;
+}
+
+/* Audio toggle button */
+#audio-toggle-btn {
+  position: absolute;
+  bottom: 24px;
+  right: 24px;
+  z-index: 15;
+  background: var(--bg-panel);
+  border: 1px solid var(--border-ornate);
+  color: var(--silk-gold);
+  font-size: 18px;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+#audio-toggle-btn:hover {
+  transform: scale(1.1);
+  box-shadow: 0 0 15px rgba(244, 208, 111, 0.5);
+}
+
+/* Cinematic notification toast */
+#toast-notification {
+  position: absolute;
+  top: 100px;
+  left: 50%;
+  transform: translateX(-50%) translateY(-20px);
+  background: rgba(18, 13, 19, 0.92);
+  border: 1px solid var(--silk-gold);
+  color: #fff;
+  padding: 10px 24px;
+  border-radius: 6px;
+  font-size: 14px;
+  letter-spacing: 2px;
+  z-index: 25;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.8), 0 0 20px var(--silk-gold-glow);
+  transition: all 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+}
+
+#toast-notification.active {
+  opacity: 1;
+  transform: translateX(-50%) translateY(0);
+}
+
+/* Virtual Controls (Touch & Mouse Clickable Buttons) */
+#virtual-controls {
+  position: absolute;
+  bottom: 24px;
+  left: 0;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  padding: 0 28px;
+  box-sizing: border-box;
+  z-index: 12;
+  pointer-events: none;
+}
+
+.vpad-left, .vpad-right {
+  display: flex;
+  pointer-events: auto;
+  gap: 8px;
+}
+
+.vpad-left {
+  flex-direction: column;
+  align-items: center;
+}
+
+.vpad-row {
+  display: flex;
+  gap: 8px;
+}
+
+.vpad-right {
+  align-items: flex-end;
+  gap: 12px;
+}
+
+.virtual-btn {
+  background: rgba(22, 17, 24, 0.75);
+  border: 1.5px solid var(--border-ornate);
+  color: var(--silk-gold);
+  border-radius: 12px;
+  width: 48px;
+  height: 48px;
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(4px);
+  user-select: none;
+  transition: all 0.1s ease;
+}
+
+.virtual-btn:hover, .virtual-btn.pressed {
+  background: rgba(199, 44, 65, 0.85);
+  color: #fff;
+  border-color: #ff6e80;
+  transform: scale(0.95);
+  box-shadow: 0 0 15px rgba(255, 110, 128, 0.7);
+}
+
+.virtual-btn.btn-action {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  font-size: 22px;
+}
+
+.btn-jump {
+  border-color: #f4d06f;
+  background: rgba(45, 34, 25, 0.8);
+}
+
+.btn-attack {
+  border-color: #c72c41;
+  background: rgba(55, 18, 25, 0.8);
+}
+
+.btn-dash {
+  border-color: #588157;
+  background: rgba(20, 35, 25, 0.8);
+}
+
+.btn-heal {
+  border-color: #f3f5f8;
+  background: rgba(35, 35, 45, 0.8);
+}
+

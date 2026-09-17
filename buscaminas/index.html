@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Buscaminas Deluxe | Clásico Modernizado</title>
+    <meta name="description" content="El clásico juego de Buscaminas modernizado con animaciones fluidas, sonido Web Audio, modos principiante a experto y primer clic seguro.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Barra Superior / Header -->
+        <header class="app-header">
+            <div class="logo-area">
+                <span class="logo-icon">💣</span>
+                <h1>BUSCAMINAS <span class="badge">DELUXE</span></h1>
+            </div>
+            <div class="header-actions">
+                <button id="btn-stats" class="icon-btn" title="Mejores Tiempos" aria-label="Ver records">🏆</button>
+                <button id="btn-help" class="icon-btn" title="Cómo jugar" aria-label="Instrucciones">❓</button>
+                <button id="btn-sound" class="icon-btn" title="Sonido activado/desactivado" aria-label="Silenciar sonido">🔊</button>
+            </div>
+        </header>
+
+        <!-- Selector de Dificultad -->
+        <nav class="difficulty-nav">
+            <button class="diff-btn active" data-difficulty="easy">
+                <span class="diff-title">Principiante</span>
+                <span class="diff-sub">9×9 • 10 💣</span>
+            </button>
+            <button class="diff-btn" data-difficulty="medium">
+                <span class="diff-title">Intermedio</span>
+                <span class="diff-sub">16×16 • 40 💣</span>
+            </button>
+            <button class="diff-btn" data-difficulty="expert">
+                <span class="diff-title">Experto</span>
+                <span class="diff-sub">30×16 • 99 💣</span>
+            </button>
+            <button class="diff-btn" data-difficulty="custom" id="btn-custom-diff">
+                <span class="diff-title">A medida</span>
+                <span class="diff-sub">Personalizado</span>
+            </button>
+        </nav>
+
+        <!-- Marco Principal del Juego (Estilo Arcade Consola) -->
+        <main class="game-console" id="game-console">
+            <!-- Barra de Estado Retro-Digital -->
+            <div class="console-panel">
+                <div class="digital-display" title="Minas restantes" id="display-mines-box">
+                    <span class="display-label">MINAS</span>
+                    <span class="led-digits" id="mines-counter">010</span>
+                </div>
+
+                <button class="face-btn" id="face-btn" title="Reiniciar partida" aria-label="Reiniciar juego">
+                    <span id="face-icon" class="face-emoji">🙂</span>
+                </button>
+
+                <div class="digital-display" title="Tiempo transcurrido" id="display-timer-box">
+                    <span class="display-label">TIEMPO</span>
+                    <span class="led-digits" id="timer-counter">000</span>
+                </div>
+            </div>
+
+            <!-- Contenedor del Tablero con Scroll Suave para tamaños grandes -->
+            <div class="board-viewport" id="board-viewport">
+                <div class="board-grid" id="board" role="grid" aria-label="Tablero de Buscaminas"></div>
+            </div>
+
+            <!-- Barra de Herramientas Rápida Móvil / Táctil -->
+            <div class="mobile-toolbar">
+                <button class="mode-toggle-btn active" id="btn-mode-dig">
+                    <span class="mode-icon">⛏️</span>
+                    <span>Cavar</span>
+                </button>
+                <button class="mode-toggle-btn" id="btn-mode-flag">
+                    <span class="mode-icon">🚩</span>
+                    <span>Bandera</span>
+                </button>
+                <button class="tool-btn" id="btn-restart" title="Nueva Partida">
+                    <span>🔄 Reiniciar</span>
+                </button>
+            </div>
+        </main>
+
+        <footer class="app-footer">
+            <p>Consejo: Haz clic derecho o mantén presionado para 🚩. Clic en un número abierto con sus banderas completas abre los alrededores (Chording).</p>
+        </footer>
+    </div>
+
+    <!-- Canvas para Partículas y Confeti de Victoria -->
+    <canvas id="effects-canvas" class="effects-canvas"></canvas>
+
+    <!-- Modal de Configuración Personalizada -->
+    <div class="modal-overlay hidden" id="modal-custom">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>Tablero Personalizado</h2>
+                <button class="close-btn" id="close-custom">&times;</button>
+            </div>
+            <form id="custom-form" class="modal-body">
+                <div class="input-group">
+                    <label for="custom-cols">Columnas (8 - 35):</label>
+                    <input type="number" id="custom-cols" min="8" max="35" value="20" required>
+                </div>
+                <div class="input-group">
+                    <label for="custom-rows">Filas (8 - 25):</label>
+                    <input type="number" id="custom-rows" min="8" max="25" value="15" required>
+                </div>
+                <div class="input-group">
+                    <label for="custom-mines">Minas (1 - <span id="custom-max-mines">250</span>):</label>
+                    <input type="number" id="custom-mines" min="1" max="250" value="35" required>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-secondary" id="cancel-custom">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Iniciar Partida</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Modal de Récords / Estadísticas -->
+    <div class="modal-overlay hidden" id="modal-stats">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>🏆 Mejores Tiempos</h2>
+                <button class="close-btn" id="close-stats">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="stats-list">
+                    <div class="stat-item">
+                        <div class="stat-name">Principiante (9×9)</div>
+                        <div class="stat-val" id="record-easy">-- seg</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-name">Intermedio (16×16)</div>
+                        <div class="stat-val" id="record-medium">-- seg</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-name">Experto (30×16)</div>
+                        <div class="stat-val" id="record-expert">-- seg</div>
+                    </div>
+                </div>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-danger" id="btn-reset-stats">Borrar Récords</button>
+                    <button type="button" class="btn btn-primary" id="btn-close-stats-action">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Ayuda / Instrucciones -->
+    <div class="modal-overlay hidden" id="modal-help">
+        <div class="modal-card">
+            <div class="modal-header">
+                <h2>📖 Cómo Jugar</h2>
+                <button class="close-btn" id="close-help">&times;</button>
+            </div>
+            <div class="modal-body help-content">
+                <p><strong>Objetivo:</strong> Descubrir todas las casillas que no contengan minas en el menor tiempo posible.</p>
+                <ul>
+                    <li><strong>Clic Izquierdo / Tocar:</strong> Descubre la casilla. ¡El primer clic siempre es seguro!</li>
+                    <li><strong>Clic Derecho / Pulsación larga:</strong> Coloca o retira una bandera (🚩) para marcar una mina detectada. Un clic extra coloca signo de duda (❓).</li>
+                    <li><strong>Números (1 al 8):</strong> Indican cuántas minas hay exactamente en las 8 casillas adyacentes.</li>
+                    <li><strong>Apertura rápida (Chording):</strong> Si una casilla con número ya tiene a su alrededor la cantidad exacta de banderas requerida, haz clic sobre ella para despejar automáticamente las demás casillas vecinas.</li>
+                </ul>
+                <div class="modal-actions">
+                    <button type="button" class="btn btn-primary" id="btn-close-help-action">¡Entendido!</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Banner / Notificación de Fin de Juego (Flotante) -->
+    <div class="game-over-banner hidden" id="game-banner">
+        <div class="banner-content">
+            <h3 id="banner-title">¡VICTORIA! 🎉</h3>
+            <p id="banner-text">Tiempo: 45s</p>
+            <div class="banner-buttons">
+                <button class="btn btn-primary" id="btn-banner-replay">Jugar de Nuevo</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

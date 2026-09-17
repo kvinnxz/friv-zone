@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Culebrita Neo-Arcade | Cyber Edition</title>
+    <meta name="description" content="El legendario juego de la culebrita en versión cyber-arcade ultra moderna con efectos de neón, partículas, power-ups y sonido retro en tiempo real.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700;900&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body data-theme="cyber">
+    <div class="cyber-background-grid"></div>
+    <div class="glow-orb orb-1"></div>
+    <div class="glow-orb orb-2"></div>
+
+    <div class="app-container">
+        <!-- Barra Superior de Navegación / Controles -->
+        <header class="game-header">
+            <div class="logo-area">
+                <span class="logo-tag">ARCADE // PROTOCOL</span>
+                <h1 class="game-title">CULEBRITA <span class="neon-highlight">NEO</span></h1>
+            </div>
+
+            <div class="header-actions">
+                <!-- Selector de Tema -->
+                <div class="theme-picker">
+                    <label for="themeSelect" class="sr-only">Tema Visual</label>
+                    <select id="themeSelect" class="btn-pill select-input" title="Cambiar tema visual">
+                        <option value="cyber">⚡ Cyber Neon</option>
+                        <option value="synthwave">🌆 Synthwave</option>
+                        <option value="matrix">💻 Matrix Code</option>
+                        <option value="arcade">🕹️ Retro Gold</option>
+                    </select>
+                </div>
+
+                <!-- Botón de Audio SFX -->
+                <button id="sfxToggleBtn" class="btn-icon" title="Efectos de sonido (Mute/Unmute)" aria-label="Efectos de sonido">
+                    <span id="sfxIcon">🔊</span>
+                </button>
+
+                <!-- Botón de Música Synthwave -->
+                <button id="musicToggleBtn" class="btn-icon" title="Música Synthwave" aria-label="Música Synthwave">
+                    <span id="musicIcon">🎵</span>
+                </button>
+
+                <!-- Botón de Ayuda / Info -->
+                <button id="helpBtn" class="btn-icon" title="Cómo jugar" aria-label="Ayuda">
+                    <span>❓</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- HUD (Puntuación, Combo y Récord) -->
+        <section class="hud-panel" aria-label="Marcador del juego">
+            <div class="hud-item score-card">
+                <span class="hud-label">PUNTOS</span>
+                <div class="hud-value-group">
+                    <span id="scoreDisplay" class="hud-value glowing-num">0</span>
+                    <span id="comboBadge" class="combo-badge hidden">x1</span>
+                </div>
+            </div>
+
+            <div class="hud-item active-powerup-card" id="powerupContainer">
+                <span class="hud-label" id="powerupName">SIN PODER</span>
+                <div class="powerup-bar-track">
+                    <div id="powerupProgressBar" class="powerup-bar-fill"></div>
+                </div>
+            </div>
+
+            <div class="hud-item highscore-card">
+                <span class="hud-label">RÉCORD MÁXIMO</span>
+                <div class="hud-value-group">
+                    <span class="crown-icon">👑</span>
+                    <span id="highScoreDisplay" class="hud-value">0</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contenedor Principal del Juego y Canvas -->
+        <main class="canvas-frame">
+            <div class="crt-scanlines"></div>
+            <div class="vignette-effect"></div>
+            
+            <canvas id="gameCanvas" width="600" height="600"></canvas>
+
+            <!-- Superposición: Menú Inicial -->
+            <div id="startOverlay" class="game-overlay active">
+                <div class="modal-content glass-card">
+                    <div class="modal-badge">SISTEMA LISTO</div>
+                    <h2 class="modal-title">¿LISTO PARA EL VUELO?</h2>
+                    <p class="modal-desc">
+                        Controla la culebrita cibernética, atrapa orbes energéticos, activa combos y domina el tablero sin estrellarte.
+                    </p>
+
+                    <!-- Selector de Dificultad -->
+                    <div class="difficulty-section">
+                        <span class="section-subtitle">SELECCIONA DIFICULTAD</span>
+                        <div class="difficulty-options">
+                            <button class="diff-btn" data-diff="chill">
+                                <span class="diff-icon">🌊</span>
+                                <span class="diff-name">Chill</span>
+                                <span class="diff-sub">Paredes libres</span>
+                            </button>
+                            <button class="diff-btn active" data-diff="arcade">
+                                <span class="diff-icon">🔥</span>
+                                <span class="diff-name">Arcade</span>
+                                <span class="diff-sub">Velocidad progresiva</span>
+                            </button>
+                            <button class="diff-btn" data-diff="hardcore">
+                                <span class="diff-icon">⚡</span>
+                                <span class="diff-name">Insane</span>
+                                <span class="diff-sub">Hiper velocidad</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <button id="startPlayBtn" class="btn-cta">
+                        <span class="btn-shine"></span>
+                        <span class="btn-text">INICIAR JUEGO</span>
+                    </button>
+
+                    <div class="quick-hints">
+                        <span>⌨️ Usa <b>WASD</b> o <b>Flechas</b> | <b>Espacio</b> = Pausa</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Superposición: Pausa -->
+            <div id="pauseOverlay" class="game-overlay hidden">
+                <div class="modal-content glass-card">
+                    <div class="modal-badge">ESTADO</div>
+                    <h2 class="modal-title">EN PAUSA</h2>
+                    <div class="overlay-button-group">
+                        <button id="resumeBtn" class="btn-cta">REANUDAR</button>
+                        <button id="restartFromPauseBtn" class="btn-secondary">REINICIAR</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Superposición: Game Over -->
+            <div id="gameOverOverlay" class="game-overlay hidden">
+                <div class="modal-content glass-card gameover-card">
+                    <div id="newRecordBadge" class="record-badge hidden">¡NUEVO RÉCORD HISTÓRICO! 🏆</div>
+                    <h2 class="modal-title death-title">SISTEMA APAGADO</h2>
+
+                    <div class="stats-grid">
+                        <div class="stat-box">
+                            <span class="stat-title">Puntaje Final</span>
+                            <span id="finalScore" class="stat-number">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-title">Orbes Comidos</span>
+                            <span id="finalOrbs" class="stat-number">0</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-title">Combo Máximo</span>
+                            <span id="finalCombo" class="stat-number">x1</span>
+                        </div>
+                        <div class="stat-box">
+                            <span class="stat-title">Tiempo de Vuelo</span>
+                            <span id="finalTime" class="stat-number">00:00</span>
+                        </div>
+                    </div>
+
+                    <div class="overlay-button-group">
+                        <button id="retryBtn" class="btn-cta">
+                            <span class="btn-shine"></span>
+                            <span class="btn-text">VOLVER A JUGAR</span>
+                        </button>
+                        <button id="backToMenuBtn" class="btn-secondary">MENÚ PRINCIPAL</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Superposición: Modal de Ayuda / Poderes -->
+            <div id="helpModal" class="game-overlay hidden">
+                <div class="modal-content glass-card help-modal-card">
+                    <h2 class="modal-title">MANUAL DE PILOTAJE</h2>
+                    <div class="powerup-legend">
+                        <div class="legend-item">
+                            <div class="legend-badge apple-color">🍏</div>
+                            <div class="legend-info">
+                                <strong>Orbe Neón:</strong> Alimento básico. +100 puntos y alarga la culebrita.
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-badge star-color">⭐</div>
+                            <div class="legend-info">
+                                <strong>Estrella Dorada:</strong> +500 puntos y aumenta el combo multiplicador.
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-badge ice-color">❄️</div>
+                            <div class="legend-info">
+                                <strong>Cristal Criogénico:</strong> Ralentiza el tiempo (slow-motion) durante 7s.
+                            </div>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-badge quantum-color">🌀</div>
+                            <div class="legend-info">
+                                <strong>Orbe Cuántico:</strong> Fantasma por 6s. ¡Atraviesa paredes y tu propio cuerpo!
+                            </div>
+                        </div>
+                    </div>
+                    <button id="closeHelpBtn" class="btn-secondary" style="margin-top: 15px;">ENTENDIDO</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Controles Táctiles Virtuales para Pantallas Táctiles / Móviles -->
+        <section class="touch-controls-panel" id="touchControls">
+            <div class="dpad-container">
+                <button class="dpad-btn up" id="dpadUp" aria-label="Arriba">▲</button>
+                <button class="dpad-btn left" id="dpadLeft" aria-label="Izquierda">◀</button>
+                <button class="dpad-btn center-pause" id="dpadPause" aria-label="Pausa">⏸</button>
+                <button class="dpad-btn right" id="dpadRight" aria-label="Derecha">▶</button>
+                <button class="dpad-btn down" id="dpadDown" aria-label="Abajo">▼</button>
+            </div>
+        </section>
+
+        <!-- Pie de página -->
+        <footer class="game-footer">
+            <span>Desarrollado con 💖 y Web Audio API | 100% Pura Adrenalina Neón</span>
+        </footer>
+    </div>
+
+    <!-- Scripts del juego -->
+    <script src="audio.js"></script>
+    <script src="game.js"></script>
+</body>
+</html>

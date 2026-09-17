@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="NEON SURGE - Un videojuego arcade cyberpunk de acción trepidante con mecánicas de tiempo bala (Chrono Shift), audio sintetizado y efectos visuales de partículas neón.">
+  <title>NEON SURGE - Chrono Survivor</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- WebGL/2D Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- CRT Scanlines / Vignette Effect Layer -->
+    <div id="crtOverlay" class="crt-overlay"></div>
+
+    <!-- HUD Overlay -->
+    <header id="hud">
+      <!-- Left: Status Meters -->
+      <div class="hud-group">
+        <div class="hud-card">
+          <div class="meter-wrapper">
+            <div class="meter-label-row">
+              <span style="color: var(--neon-cyan)">ESCUDO</span>
+              <span id="shieldVal" style="color: var(--neon-cyan)">100%</span>
+            </div>
+            <div class="meter-track">
+              <div id="shieldFill" class="meter-fill shield-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="meter-wrapper">
+            <div class="meter-label-row">
+              <span style="color: var(--neon-purple)">CHRONO SHIFT</span>
+              <span id="chronoVal" style="color: var(--neon-purple)">100%</span>
+            </div>
+            <div class="meter-track">
+              <div id="chronoFill" class="meter-fill chrono-fill" style="width: 100%;"></div>
+            </div>
+          </div>
+
+          <div class="meter-wrapper">
+            <div class="meter-label-row">
+              <span style="color: var(--neon-magenta)">OVERDRIVE</span>
+              <span id="overdriveVal" style="color: var(--neon-magenta)">0%</span>
+            </div>
+            <div class="meter-track">
+              <div id="overdriveFill" class="meter-fill overdrive-fill" style="width: 0%;"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Center: Score & Combo -->
+      <div class="hud-group hud-center">
+        <div class="score-panel">
+          <span class="score-title">PUNTUACIÓN</span>
+          <span id="currentScore" class="score-val">000000</span>
+          <div id="multiplierBadge" class="multiplier-badge">COMBO x1.0</div>
+        </div>
+      </div>
+
+      <!-- Right: EMP & Quick Controls -->
+      <div class="hud-group hud-right">
+        <div class="hud-card emp-status">
+          <div class="emp-icon">E</div>
+          <div>
+            <div style="font-size: 9px; letter-spacing: 1px; color: var(--text-muted); font-family: var(--font-display);">ONDA EXPANSIVA</div>
+            <div id="empStatusText" class="emp-ready">EMP LISTO</div>
+          </div>
+        </div>
+
+        <div class="top-buttons">
+          <button id="btnAudio" class="btn-icon" title="Silenciar / Activar Sonido">🔊 AUDIO</button>
+          <button id="btnScanlines" class="btn-icon" title="Alternar Scanlines">📺 CRT</button>
+          <button id="btnPause" class="btn-icon" title="Pausar Juego">⏸ PAUSA</button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Start Screen Modal -->
+    <div id="startScreen" class="screen-modal">
+      <div class="modal-content">
+        <h1 class="game-title">NEON SURGE</h1>
+        <div class="game-subtitle">CHRONO SURVIVOR // PROTOCOL 2026</div>
+
+        <p style="color: var(--text-muted); font-size: 14px; line-height: 1.6; margin-bottom: 20px;">
+          Pilota la nave hipercinética en el hiperespacio cuántico. Destruye drones autónomos, esquiva barreras láser y activa la dilatación temporal para sobrevivir a las oleadas extremas.
+        </p>
+
+        <div class="controls-grid">
+          <div class="control-item">
+            <span class="key-badge">WASD / MOUSE</span>
+            <span class="key-desc">Mover nave y esquivar</span>
+          </div>
+          <div class="control-item">
+            <span class="key-badge">CLICK IZQ</span>
+            <span class="key-desc">Disparar cañón de plasma</span>
+          </div>
+          <div class="control-item">
+            <span class="key-badge">ESPACIO / CLICK DER</span>
+            <span class="key-desc">Chrono Shift (Tiempo bala)</span>
+          </div>
+          <div class="control-item">
+            <span class="key-badge">TECLA E</span>
+            <span class="key-desc">Detonar Bomba EMP</span>
+          </div>
+        </div>
+
+        <div style="margin-bottom: 24px;">
+          <span style="font-family: var(--font-display); font-size: 12px; color: var(--neon-yellow);">RÉCORD GLOBAL: </span>
+          <span id="startBestScore" style="font-family: var(--font-display); font-size: 16px; font-weight: 900; color: #fff;">0</span>
+        </div>
+
+        <button id="btnStartGame" class="btn-primary">INICIAR MISIÓN</button>
+      </div>
+    </div>
+
+    <!-- Game Over Screen Modal -->
+    <div id="gameOverScreen" class="screen-modal hidden">
+      <div class="modal-content">
+        <h2 class="game-title" style="font-size: 40px; background: linear-gradient(135deg, #fff, #ff0055); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">SEÑAL PERDIDA</h2>
+        <div class="game-subtitle" style="color: var(--neon-magenta);">NAVE DESTRUIDA EN ACCIÓN</div>
+
+        <div class="stats-summary">
+          <div class="stat-box">
+            <span class="stat-label">PUNTOS</span>
+            <span id="finalScore" class="stat-number cyan">0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">MÁXIMO COMBO</span>
+            <span id="finalCombo" class="stat-number">x1.0</span>
+          </div>
+          <div class="stat-box">
+            <span class="stat-label">RÉCORD</span>
+            <span id="recordScore" class="stat-number gold">0</span>
+          </div>
+        </div>
+
+        <div id="newRecordAlert" style="display: none; color: var(--neon-yellow); font-family: var(--font-display); font-weight: 800; font-size: 14px; margin-bottom: 16px; text-shadow: 0 0 10px var(--neon-yellow);">
+          ★ ¡NUEVO RÉCORD MUNDIAL REGISTRADO! ★
+        </div>
+
+        <button id="btnRestartGame" class="btn-primary">REINTENTAR MISIÓN</button>
+      </div>
+    </div>
+
+    <!-- Pause Screen Modal -->
+    <div id="pauseScreen" class="screen-modal hidden">
+      <div class="modal-content" style="max-width: 440px;">
+        <h2 class="game-title" style="font-size: 36px;">SISTEMA EN PAUSA</h2>
+        <p style="color: var(--text-muted); font-size: 14px; margin: 16px 0 24px 0;">
+          El flujo temporal está detenido. Descansa los reflejos antes de continuar el combate.
+        </p>
+        <button id="btnResumeGame" class="btn-primary" style="margin-bottom: 12px; width: 100%;">CONTINUAR</button>
+        <button id="btnAbandonGame" class="btn-secondary" style="width: 100%;">ABANDONAR A MENÚ</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="audio.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>FRIV-ZONE | Plataforma de Juegos Arcade & Retro</title>
+    <meta name="description" content="Plataforma de videojuegos estilo Friv con los mejores juegos arcade, retro, carreras 3D, lógica y acción. Juega gratis al instante.">
+    
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700;800&family=Fredoka:wght@500;600;700;800&family=Outfit:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-friv">
+    <!-- Fondo Dinámico con Estrellas y Cuadrícula Arcade -->
+    <div class="bg-effects" aria-hidden="true">
+        <div class="stars-layer"></div>
+        <div class="grid-glow"></div>
+    </div>
+
+    <!-- Contenedor Principal de la Plataforma -->
+    <div id="friv-app" class="friv-layout">
+
+        <!-- Barra Superior / Header Friv -->
+        <header class="friv-navbar">
+            <div class="nav-left">
+                <a href="#" class="friv-logo-group" id="btn-home-logo" title="FRIV ZONE - Inicio">
+                    <div class="friv-logo">
+                        <span class="char-f">F</span>
+                        <span class="char-r">R</span>
+                        <span class="char-i">I</span>
+                        <span class="char-v">V</span>
+                    </div>
+                    <span class="logo-badge">ZONE</span>
+                </a>
+                <div class="header-tagline">
+                    <span class="tagline-dot"></span>
+                    <span class="tagline-text"><strong id="total-games-counter">9</strong> JUEGOS LISTOS</span>
+                </div>
+            </div>
+
+            <!-- Buscador Central -->
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="game-search-input" placeholder="Buscar juego (Mario, Slither, Ajedrez, 3D...)" autocomplete="off" aria-label="Buscar juegos">
+                <button id="clear-search-btn" class="clear-search hidden" title="Borrar búsqueda">✕</button>
+            </div>
+
+            <!-- Acciones Rápidas Superior Derecha -->
+            <div class="nav-right">
+                <button id="btn-random-game" class="action-btn btn-random" title="Elegir juego al azar">
+                    <span class="btn-icon">🎲</span>
+                    <span class="btn-text">¡Aleatorio!</span>
+                </button>
+                <button id="btn-toggle-sound" class="action-btn icon-only" title="Activar/Desactivar Sonido UI" aria-label="Sonido">
+                    <span id="sound-icon">🔊</span>
+                </button>
+                <button id="btn-toggle-theme" class="action-btn icon-only" title="Cambiar Tema Visual" aria-label="Tema">
+                    <span id="theme-icon">🌓</span>
+                </button>
+            </div>
+        </header>
+
+        <!-- Barra de Categorías y Filtros -->
+        <nav class="categories-bar" aria-label="Categorías de juegos">
+            <div class="categories-wrapper">
+                <button class="cat-pill active" data-category="all">
+                    <span class="cat-icon">⭐</span>
+                    <span class="cat-label">Todos</span>
+                    <span class="cat-count" id="count-all">9</span>
+                </button>
+                <button class="cat-pill" data-category="arcade">
+                    <span class="cat-icon">🕹️</span>
+                    <span class="cat-label">Arcade & Retro</span>
+                    <span class="cat-count" id="count-arcade">3</span>
+                </button>
+                <button class="cat-pill" data-category="action">
+                    <span class="cat-icon">⚔️</span>
+                    <span class="cat-label">Acción & Supervivencia</span>
+                    <span class="cat-count" id="count-action">3</span>
+                </button>
+                <button class="cat-pill" data-category="3d">
+                    <span class="cat-icon">🚀</span>
+                    <span class="cat-label">Carreras & 3D</span>
+                    <span class="cat-count" id="count-3d">1</span>
+                </button>
+                <button class="cat-pill" data-category="strategy">
+                    <span class="cat-icon">🧠</span>
+                    <span class="cat-label">Lógica & Tablero</span>
+                    <span class="cat-count" id="count-strategy">2</span>
+                </button>
+                <button class="cat-pill" data-category="favorites">
+                    <span class="cat-icon">❤️</span>
+                    <span class="cat-label">Mis Favoritos</span>
+                    <span class="cat-count" id="count-favorites">0</span>
+                </button>
+            </div>
+        </nav>
+
+        <!-- Banner de Bienvenida Estilo Arcade -->
+        <div class="marquee-banner">
+            <div class="marquee-content">
+                <span>🔥 ¡ESPICHA CUALQUIER CASILLA PARA JUGAR AL INSTANTE!</span>
+                <span>•</span>
+                <span>🎮 9 JUEGOS SIN DESCARGAS NI ESPERAS</span>
+                <span>•</span>
+                <span>⭐ PANTALLA COMPLETA DISPONIBLE</span>
+                <span>•</span>
+                <span>🍄 DISFRUTA DE MARIO, SILKSONG, CYBER VELOCITY, SLITHER Y MÁS</span>
+            </div>
+        </div>
+
+        <!-- Mosaico Principal de Juegos Estilo Friv (GRID) -->
+        <main class="games-mosaic-section">
+            <div id="games-grid" class="games-grid" role="list">
+                <!-- Se inyecta dinámicamente desde app.js -->
+            </div>
+
+            <!-- Estado Vacío cuando no hay resultados de búsqueda -->
+            <div id="empty-state" class="empty-state hidden">
+                <div class="empty-icon">👾</div>
+                <h3>No se encontraron juegos</h3>
+                <p>Intenta con otra palabra o borra el filtro de búsqueda.</p>
+                <button id="btn-reset-filters" class="action-btn">Restablecer Filtros</button>
+            </div>
+        </main>
+
+        <!-- Pie de Página -->
+        <footer class="friv-footer">
+            <div class="footer-content">
+                <div class="footer-branding">
+                    <div class="friv-logo-small">FRIV<span>ZONE</span></div>
+                    <p>Tu colección definitiva de juegos retro, arcade e interactivos en el navegador.</p>
+                </div>
+                <div class="footer-shortcuts">
+                    <span class="shortcut-item"><kbd>ESC</kbd> Volver al menú</span>
+                    <span class="shortcut-item"><kbd>F</kbd> Pantalla Completa</span>
+                    <span class="shortcut-item"><kbd>R</kbd> Juego Aleatorio</span>
+                </div>
+                <div class="footer-copy">
+                    Hecho con ❤️ para jugar sin límites
+                </div>
+            </div>
+        </footer>
+
+    </div> <!-- /#friv-app -->
+
+
+    <!-- ============================================== -->
+    <!-- REPRODUCTOR ARCADE INTEGRADO (MODAL/CINEMA)    -->
+    <!-- ============================================== -->
+    <div id="game-player-modal" class="game-player-modal hidden" role="dialog" aria-modal="true" aria-labelledby="player-game-title">
+        <div class="player-overlay" id="player-backdrop"></div>
+        
+        <div class="player-container">
+            <!-- Barra Superior del Reproductor -->
+            <div class="player-topbar">
+                <div class="player-left">
+                    <button id="btn-close-player" class="player-btn btn-back" title="Volver al menú de juegos (ESC)">
+                        <span class="btn-arrow">◀</span>
+                        <span>VOLVER AL MENÚ</span>
+                    </button>
+                    <div class="player-title-box">
+                        <span id="player-game-icon" class="player-icon">🎮</span>
+                        <div>
+                            <h2 id="player-game-title" class="player-title">Título del Juego</h2>
+                            <div class="player-badges-row">
+                                <span id="player-game-category" class="player-category-badge">Categoría</span>
+                                <span id="player-game-tag" class="player-tag-badge">HOT</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="player-controls">
+                    <button id="btn-player-favorite" class="player-btn icon-btn" title="Añadir a Favoritos">
+                        <span id="player-favorite-icon">🤍</span>
+                    </button>
+                    <button id="btn-player-controls-info" class="player-btn icon-btn" title="Ver Controles e Instrucciones">
+                        <span>⌨️</span>
+                    </button>
+                    <button id="btn-player-reload" class="player-btn icon-btn" title="Reiniciar Juego">
+                        <span>🔄</span>
+                    </button>
+                    <button id="btn-player-external" class="player-btn icon-btn" title="Abrir en pestaña completa independiente">
+                        <span>↗️</span>
+                    </button>
+                    <button id="btn-player-fullscreen" class="player-btn icon-btn btn-fullscreen-highlight" title="Pantalla Completa (F)">
+                        <span id="fullscreen-icon">⛶</span>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Panel de Controles / Instrucciones Desplegable -->
+            <div id="player-instructions-panel" class="player-instructions-panel hidden">
+                <div class="instructions-header">
+                    <h4>🎮 Cómo Jugar y Controles</h4>
+                    <button id="btn-close-instructions" class="close-pill-btn">✕</button>
+                </div>
+                <div id="instructions-content" class="instructions-body">
+                    <!-- Contenido inyectado dinámicamente -->
+                </div>
+            </div>
+
+            <!-- Contenedor del Iframe del Juego -->
+            <div class="iframe-wrapper" id="iframe-wrapper">
+                <div id="game-loading-spinner" class="game-loader">
+                    <div class="spinner-arcade"></div>
+                    <p class="loader-text">Cargando juego...</p>
+                </div>
+                <iframe id="game-iframe" src="about:blank" title="Marco de Juego" allow="autoplay; fullscreen; gamepad; accelerometer; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ============================================== -->
+    <!-- MODAL DE RULETA / JUEGO ALEATORIO              -->
+    <!-- ============================================== -->
+    <div id="roulette-modal" class="roulette-modal hidden" role="dialog" aria-modal="true">
+        <div class="roulette-backdrop"></div>
+        <div class="roulette-card">
+            <div class="roulette-header">
+                <span class="roulette-icon-spin">🎲</span>
+                <h3>SELECCIONANDO JUEGO AL AZAR...</h3>
+            </div>
+            <div class="roulette-reel-wrapper">
+                <div id="roulette-reel" class="roulette-reel">
+                    <!-- Tarjeta animada que cambia a gran velocidad -->
+                    <div id="roulette-display" class="roulette-item">
+                        <span class="item-icon">🎮</span>
+                        <h4 class="item-title">Preparando...</h4>
+                    </div>
+                </div>
+            </div>
+            <p class="roulette-status">¡Buena suerte, que empiece la partida!</p>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,1186 @@
+/* ==========================================================================
+   FRIV-ZONE ARCADE HUB - HOJA DE ESTILOS PRINCIPAL
+   Inspirado en el clásico Friv con estética moderna, vibrante y reactiva.
+   ========================================================================== */
+
+:root {
+    /* Paleta Friv Vibrante */
+    --friv-yellow: #FFE600;
+    --friv-pink: #FF007F;
+    --friv-cyan: #00F0FF;
+    --friv-green: #25DF5D;
+    --friv-purple: #8B2FFF;
+    --friv-orange: #FF6600;
+    --friv-blue: #0088FF;
+    --friv-red: #FF2A2A;
+
+    /* Fondos y Superficies (Modo Friv / Arcade Oscuro Vibrante) */
+    --bg-dark: #0c0d14;
+    --bg-surface: #141724;
+    --bg-surface-elevated: #1d2136;
+    --bg-surface-hover: #262c47;
+    
+    /* Bordes y Luces */
+    --border-subtle: rgba(255, 255, 255, 0.1);
+    --border-glow: rgba(0, 240, 255, 0.4);
+    --shadow-card: 0 8px 24px -6px rgba(0, 0, 0, 0.6);
+    --shadow-hover: 0 16px 36px -4px rgba(0, 240, 255, 0.35);
+
+    /* Textos */
+    --text-primary: #FFFFFF;
+    --text-secondary: #A6B0CF;
+    --text-muted: #6C7799;
+
+    /* Fuentes */
+    --font-heading: 'Fredoka', 'Outfit', sans-serif;
+    --font-ui: 'Outfit', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-arcade: 'Chakra Petch', sans-serif;
+    --font-pixel: 'Press Start 2P', monospace;
+
+    /* Transiciones */
+    --transition-fast: 0.15s ease;
+    --transition-smooth: 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    --transition-bounce: 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+/* Tema Alternativo: Friv Retro Clásico */
+body.theme-classic {
+    --bg-dark: #121024;
+    --bg-surface: #1b1735;
+    --bg-surface-elevated: #26214a;
+    --bg-surface-hover: #322b62;
+    --border-subtle: rgba(255, 255, 255, 0.16);
+    --border-glow: rgba(255, 230, 0, 0.5);
+}
+
+/* Reset y Base */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html, body {
+    width: 100%;
+    min-height: 100%;
+    background-color: var(--bg-dark);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 16px;
+    line-height: 1.5;
+    overflow-x: hidden;
+}
+
+/* Fondo Dinámico con Estrellas y Cuadrícula */
+.bg-effects {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.stars-layer {
+    position: absolute;
+    inset: 0;
+    background-image: 
+        radial-gradient(circle at 15% 20%, rgba(139, 47, 255, 0.18) 0%, transparent 45%),
+        radial-gradient(circle at 85% 15%, rgba(0, 240, 255, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 50% 80%, rgba(255, 0, 127, 0.12) 0%, transparent 50%),
+        radial-gradient(2px 2px at 20px 30px, #ffffff, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 90px 80px, #00F0FF, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 160px 120px, #FFE600, rgba(0,0,0,0)),
+        radial-gradient(2px 2px at 240px 50px, #FF007F, rgba(0,0,0,0));
+    background-repeat: repeat;
+    background-size: auto, auto, auto, 300px 300px, 400px 400px, 350px 350px, 500px 500px;
+    opacity: 0.8;
+}
+
+.grid-glow {
+    position: absolute;
+    inset: 0;
+    background-size: 40px 40px;
+    background-image: 
+        linear-gradient(to right, rgba(255, 255, 255, 0.025) 1px, transparent 1px),
+        linear-gradient(to bottom, rgba(255, 255, 255, 0.025) 1px, transparent 1px);
+    mask-image: radial-gradient(circle at 50% 30%, black 40%, transparent 85%);
+}
+
+/* Contenedor Principal */
+.friv-layout {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+    padding: 0 1rem;
+    max-width: 1440px;
+    margin: 0 auto;
+}
+
+/* ==========================================================================
+   BARRA SUPERIOR (HEADER)
+   ========================================================================== */
+.friv-navbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 1rem 0;
+    border-bottom: 2px solid var(--border-subtle);
+}
+
+.nav-left {
+    display: flex;
+    align-items: center;
+    gap: 1.25rem;
+}
+
+.friv-logo-group {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    text-decoration: none;
+    user-select: none;
+    transition: transform var(--transition-bounce);
+}
+
+.friv-logo-group:hover {
+    transform: scale(1.06) rotate(-1deg);
+}
+
+.friv-logo {
+    display: flex;
+    gap: 2px;
+    font-family: var(--font-heading);
+    font-size: 2.2rem;
+    font-weight: 800;
+    letter-spacing: -1px;
+    text-shadow: 0 4px 10px rgba(0, 0, 0, 0.6);
+}
+
+.char-f { color: var(--friv-yellow); text-shadow: 0 0 14px rgba(255, 230, 0, 0.6); }
+.char-r { color: var(--friv-pink); text-shadow: 0 0 14px rgba(255, 0, 127, 0.6); }
+.char-i { color: var(--friv-cyan); text-shadow: 0 0 14px rgba(0, 240, 255, 0.6); }
+.char-v { color: var(--friv-green); text-shadow: 0 0 14px rgba(37, 223, 93, 0.6); }
+
+.logo-badge {
+    background: linear-gradient(135deg, var(--friv-purple), var(--friv-pink));
+    color: #fff;
+    font-family: var(--font-arcade);
+    font-size: 0.72rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    letter-spacing: 1.5px;
+    box-shadow: 0 0 12px rgba(139, 47, 255, 0.5);
+    margin-left: 2px;
+}
+
+.header-tagline {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    background: rgba(255, 255, 255, 0.04);
+    padding: 0.35rem 0.75rem;
+    border-radius: 20px;
+    border: 1px solid var(--border-subtle);
+}
+
+.tagline-dot {
+    width: 8px;
+    height: 8px;
+    background-color: var(--friv-green);
+    border-radius: 50%;
+    box-shadow: 0 0 8px var(--friv-green);
+    animation: pulseDot 1.8s infinite;
+}
+
+@keyframes pulseDot {
+    0%, 100% { transform: scale(1); opacity: 1; }
+    50% { transform: scale(1.3); opacity: 0.6; }
+}
+
+/* Buscador */
+.search-container {
+    position: relative;
+    flex: 1;
+    max-width: 460px;
+    display: flex;
+    align-items: center;
+}
+
+.search-icon {
+    position: absolute;
+    left: 1rem;
+    pointer-events: none;
+    font-size: 1.05rem;
+    opacity: 0.7;
+}
+
+#game-search-input {
+    width: 100%;
+    padding: 0.75rem 2.5rem 0.75rem 2.8rem;
+    background-color: var(--bg-surface);
+    border: 2px solid var(--border-subtle);
+    border-radius: 999px;
+    color: #ffffff;
+    font-family: var(--font-ui);
+    font-size: 0.95rem;
+    outline: none;
+    transition: all var(--transition-smooth);
+}
+
+#game-search-input:focus {
+    border-color: var(--friv-cyan);
+    box-shadow: 0 0 18px rgba(0, 240, 255, 0.3);
+    background-color: var(--bg-surface-elevated);
+}
+
+.clear-search {
+    position: absolute;
+    right: 0.9rem;
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.9rem;
+    cursor: pointer;
+    padding: 0.2rem;
+    border-radius: 50%;
+}
+
+.clear-search:hover {
+    color: #fff;
+}
+
+/* Acciones Nav Derecha */
+.nav-right {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.action-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    background: var(--bg-surface-elevated);
+    border: 1px solid var(--border-subtle);
+    color: var(--text-primary);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    font-weight: 600;
+    padding: 0.65rem 1rem;
+    border-radius: 12px;
+    cursor: pointer;
+    user-select: none;
+    transition: all var(--transition-fast);
+}
+
+.action-btn:hover {
+    background: var(--bg-surface-hover);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-2px);
+}
+
+.action-btn:active {
+    transform: translateY(0);
+}
+
+.action-btn.icon-only {
+    padding: 0.65rem;
+    width: 42px;
+    height: 42px;
+}
+
+.btn-random {
+    background: linear-gradient(135deg, #FF6600, #FF007F);
+    border: none;
+    color: #ffffff;
+    box-shadow: 0 4px 15px rgba(255, 102, 0, 0.4);
+}
+
+.btn-random:hover {
+    box-shadow: 0 6px 20px rgba(255, 0, 127, 0.6);
+    filter: brightness(1.1);
+}
+
+/* ==========================================================================
+   BARRA DE CATEGORÍAS
+   ========================================================================== */
+.categories-bar {
+    padding: 1rem 0 0.5rem;
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+
+.categories-bar::-webkit-scrollbar {
+    display: none;
+}
+
+.categories-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: max-content;
+}
+
+.cat-pill {
+    display: flex;
+    align-items: center;
+    gap: 0.45rem;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    padding: 0.55rem 1rem;
+    border-radius: 999px;
+    color: var(--text-secondary);
+    font-family: var(--font-ui);
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.cat-pill:hover {
+    color: #ffffff;
+    background: var(--bg-surface-hover);
+    border-color: rgba(255, 255, 255, 0.25);
+    transform: translateY(-1px);
+}
+
+.cat-pill.active {
+    background: linear-gradient(135deg, rgba(0, 240, 255, 0.2), rgba(139, 47, 255, 0.3));
+    border-color: var(--friv-cyan);
+    color: #ffffff;
+    box-shadow: 0 0 16px rgba(0, 240, 255, 0.3);
+}
+
+.cat-count {
+    background: rgba(255, 255, 255, 0.12);
+    padding: 0.1rem 0.45rem;
+    border-radius: 10px;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+
+.cat-pill.active .cat-count {
+    background: var(--friv-cyan);
+    color: #000;
+}
+
+/* Marquee Informativo Retro */
+.marquee-banner {
+    background: rgba(255, 230, 0, 0.07);
+    border: 1px dashed rgba(255, 230, 0, 0.35);
+    border-radius: 8px;
+    padding: 0.4rem 0.8rem;
+    margin: 0.6rem 0 1.2rem;
+    overflow: hidden;
+    white-space: nowrap;
+}
+
+.marquee-content {
+    display: inline-flex;
+    gap: 1.5rem;
+    animation: tickerMove 32s linear infinite;
+    font-family: var(--font-arcade);
+    font-size: 0.8rem;
+    letter-spacing: 1px;
+    color: var(--friv-yellow);
+    font-weight: 700;
+}
+
+@keyframes tickerMove {
+    0% { transform: translateX(0); }
+    100% { transform: translateX(-50%); }
+}
+
+/* ==========================================================================
+   MOSAICO DE JUEGOS ESTILO FRIV (GRID)
+   ========================================================================== */
+.games-mosaic-section {
+    flex: 1;
+    padding-bottom: 3rem;
+}
+
+.games-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 1.4rem;
+}
+
+/* Tarjeta de Juego Friv */
+.game-card {
+    position: relative;
+    background: var(--bg-surface);
+    border-radius: 18px;
+    border: 2px solid var(--border-subtle);
+    overflow: hidden;
+    cursor: pointer;
+    user-select: none;
+    display: flex;
+    flex-direction: column;
+    transition: transform var(--transition-bounce), border-color var(--transition-smooth), box-shadow var(--transition-smooth);
+    box-shadow: var(--shadow-card);
+}
+
+.game-card:hover {
+    transform: translateY(-8px) scale(1.02);
+    border-color: var(--card-accent, var(--friv-cyan));
+    box-shadow: 0 16px 36px -4px var(--card-glow, rgba(0, 240, 255, 0.4));
+    z-index: 5;
+}
+
+/* Portada / Artwork de la Tarjeta */
+.card-thumbnail {
+    position: relative;
+    width: 100%;
+    height: 180px;
+    background: linear-gradient(135deg, #1f243b, #111422);
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.card-bg-gradient {
+    position: absolute;
+    inset: 0;
+    opacity: 0.85;
+    transition: opacity var(--transition-smooth), transform var(--transition-smooth);
+}
+
+.game-card:hover .card-bg-gradient {
+    opacity: 1;
+    transform: scale(1.05);
+}
+
+/* Ilustración / Vector del Juego */
+.card-illustration {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: transform var(--transition-bounce);
+}
+
+.game-card:hover .card-illustration {
+    transform: scale(1.15) rotate(-2deg);
+}
+
+.game-big-icon {
+    font-size: 4rem;
+    filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.6));
+}
+
+.game-card-subicon {
+    font-family: var(--font-arcade);
+    font-size: 0.8rem;
+    font-weight: 800;
+    color: #ffffff;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.4);
+    padding: 0.15rem 0.6rem;
+    border-radius: 999px;
+    margin-top: 0.25rem;
+    backdrop-filter: blur(4px);
+}
+
+/* Badges sobre la portada */
+.card-top-badges {
+    position: absolute;
+    top: 0.75rem;
+    left: 0.75rem;
+    right: 0.75rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    z-index: 3;
+}
+
+.tag-badge {
+    font-family: var(--font-arcade);
+    font-size: 0.68rem;
+    font-weight: 800;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    letter-spacing: 0.5px;
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
+}
+
+.badge-hot { background: linear-gradient(135deg, #FF0055, #FF5500); }
+.badge-new { background: linear-gradient(135deg, #00C853, #64DD17); }
+.badge-3d { background: linear-gradient(135deg, #0091EA, #00B0FF); }
+.badge-retro { background: linear-gradient(135deg, #AA00FF, #E040FB); }
+.badge-classic { background: linear-gradient(135deg, #FF6D00, #FFD600); color: #000; }
+
+.btn-card-fav {
+    background: rgba(0, 0, 0, 0.45);
+    border: none;
+    color: #fff;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1rem;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: transform var(--transition-fast), background var(--transition-fast);
+}
+
+.btn-card-fav:hover {
+    transform: scale(1.2);
+    background: rgba(255, 0, 127, 0.7);
+}
+
+.btn-card-fav.is-favorite {
+    color: #FF007F;
+    background: rgba(255, 255, 255, 0.9);
+}
+
+/* Hover Overlay "¡JUGAR YA!" */
+.card-hover-play-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    opacity: 0;
+    transition: opacity var(--transition-smooth);
+    z-index: 4;
+}
+
+.game-card:hover .card-hover-play-overlay {
+    opacity: 1;
+}
+
+.play-action-pill {
+    background: var(--friv-yellow);
+    color: #000;
+    font-family: var(--font-heading);
+    font-size: 1.05rem;
+    font-weight: 800;
+    padding: 0.55rem 1.3rem;
+    border-radius: 999px;
+    box-shadow: 0 4px 16px rgba(255, 230, 0, 0.6);
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transform: translateY(10px);
+    transition: transform var(--transition-bounce);
+}
+
+.game-card:hover .play-action-pill {
+    transform: translateY(0);
+}
+
+.play-action-pill:hover {
+    filter: brightness(1.1);
+}
+
+/* Información de la Tarjeta */
+.card-info {
+    padding: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    gap: 0.45rem;
+    background: var(--bg-surface);
+}
+
+.card-title-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 0.5rem;
+}
+
+.card-title {
+    font-family: var(--font-heading);
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    line-height: 1.25;
+}
+
+.card-rating {
+    font-size: 0.8rem;
+    color: var(--friv-yellow);
+    white-space: nowrap;
+    font-weight: 700;
+}
+
+.card-description {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+    line-height: 1.4;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.card-footer-tags {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: auto;
+    padding-top: 0.6rem;
+    border-top: 1px solid var(--border-subtle);
+    font-size: 0.78rem;
+}
+
+.card-category-text {
+    color: var(--card-accent, var(--friv-cyan));
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.card-quick-controls {
+    color: var(--text-muted);
+    font-family: var(--font-arcade);
+}
+
+/* Estado Vacío */
+.empty-state {
+    text-align: center;
+    padding: 4rem 1rem;
+    background: var(--bg-surface);
+    border-radius: 20px;
+    border: 2px dashed var(--border-subtle);
+    margin-top: 2rem;
+}
+
+.empty-icon {
+    font-size: 3.5rem;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-family: var(--font-heading);
+    font-size: 1.5rem;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+}
+
+/* ==========================================================================
+   REPRODUCTOR ARCADE INTEGRADO (MODAL/CINEMA)
+   ========================================================================== */
+.game-player-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.player-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(6, 7, 12, 0.88);
+    backdrop-filter: blur(12px);
+    animation: fadeIn 0.25s ease-out;
+}
+
+.player-container {
+    position: relative;
+    z-index: 2;
+    width: 100%;
+    max-width: 1200px;
+    height: 90vh;
+    max-height: 850px;
+    background: var(--bg-surface);
+    border: 2px solid var(--friv-cyan);
+    border-radius: 20px;
+    box-shadow: 0 0 50px rgba(0, 240, 255, 0.35), 0 20px 60px rgba(0, 0, 0, 0.8);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    animation: zoomInModal 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes zoomInModal {
+    from {
+        opacity: 0;
+        transform: scale(0.92) translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+    }
+}
+
+/* Barra Superior del Reproductor */
+.player-topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0.85rem 1.25rem;
+    background: var(--bg-surface-elevated);
+    border-bottom: 2px solid var(--border-subtle);
+    gap: 1rem;
+}
+
+.player-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    min-width: 0;
+}
+
+.btn-back {
+    background: linear-gradient(135deg, var(--friv-pink), var(--friv-purple)) !important;
+    color: #ffffff !important;
+    font-weight: 800 !important;
+    padding: 0.55rem 1rem !important;
+    border-radius: 12px !important;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    box-shadow: 0 4px 15px rgba(255, 0, 127, 0.4);
+}
+
+.btn-back:hover {
+    filter: brightness(1.15);
+    transform: translateY(-2px);
+}
+
+.player-title-box {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    min-width: 0;
+}
+
+.player-icon {
+    font-size: 1.8rem;
+}
+
+.player-title {
+    font-family: var(--font-heading);
+    font-size: 1.25rem;
+    font-weight: 700;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.player-badges-row {
+    display: flex;
+    gap: 0.4rem;
+    margin-top: 0.1rem;
+}
+
+.player-category-badge {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--friv-cyan);
+    text-transform: uppercase;
+}
+
+.player-tag-badge {
+    font-size: 0.68rem;
+    font-weight: 800;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 0.05rem 0.35rem;
+    border-radius: 4px;
+}
+
+.player-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.player-btn {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-subtle);
+    color: #fff;
+    padding: 0.5rem 0.8rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.player-btn:hover {
+    background: var(--bg-surface-hover);
+    border-color: rgba(255, 255, 255, 0.3);
+    transform: translateY(-2px);
+}
+
+.btn-fullscreen-highlight {
+    background: var(--friv-yellow) !important;
+    color: #000 !important;
+    font-weight: 800;
+    border: none;
+    box-shadow: 0 0 12px rgba(255, 230, 0, 0.4);
+}
+
+.btn-fullscreen-highlight:hover {
+    filter: brightness(1.15);
+}
+
+/* Panel Desplegable de Controles */
+.player-instructions-panel {
+    background: var(--bg-surface-elevated);
+    border-bottom: 2px solid var(--friv-cyan);
+    padding: 1rem 1.25rem;
+    animation: slideDown 0.2s ease-out;
+}
+
+@keyframes slideDown {
+    from { transform: translateY(-20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.instructions-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 0.6rem;
+}
+
+.instructions-header h4 {
+    font-family: var(--font-heading);
+    color: var(--friv-cyan);
+}
+
+.close-pill-btn {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.close-pill-btn:hover { color: #fff; }
+
+.instructions-body {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+}
+
+.control-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.key-tag {
+    background: #000;
+    border: 1px solid var(--border-subtle);
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    font-family: var(--font-arcade);
+    font-weight: 700;
+    color: var(--friv-yellow);
+    box-shadow: 0 2px 0 rgba(255, 255, 255, 0.2);
+}
+
+/* Marco Iframe */
+.iframe-wrapper {
+    position: relative;
+    flex: 1;
+    width: 100%;
+    background: #000;
+    overflow: hidden;
+}
+
+#game-iframe {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: none;
+    display: block;
+}
+
+.game-loader {
+    position: absolute;
+    inset: 0;
+    background: #000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    z-index: 10;
+    transition: opacity 0.3s ease;
+}
+
+.spinner-arcade {
+    width: 48px;
+    height: 48px;
+    border: 5px solid rgba(0, 240, 255, 0.2);
+    border-top-color: var(--friv-cyan);
+    border-right-color: var(--friv-pink);
+    border-radius: 50%;
+    animation: spinLoader 0.7s linear infinite;
+}
+
+@keyframes spinLoader {
+    to { transform: rotate(360deg); }
+}
+
+.loader-text {
+    font-family: var(--font-arcade);
+    font-size: 1rem;
+    letter-spacing: 1px;
+    color: var(--friv-cyan);
+}
+
+/* ==========================================================================
+   MODAL DE RULETA / SELECCIÓN ALEATORIA
+   ========================================================================== */
+.roulette-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 1100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+}
+
+.roulette-backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.85);
+    backdrop-filter: blur(8px);
+}
+
+.roulette-card {
+    position: relative;
+    z-index: 2;
+    background: var(--bg-surface-elevated);
+    border: 3px solid var(--friv-yellow);
+    box-shadow: 0 0 50px rgba(255, 230, 0, 0.4);
+    border-radius: 24px;
+    padding: 2rem;
+    width: 100%;
+    max-width: 440px;
+    text-align: center;
+    animation: zoomInModal 0.25s ease-out;
+}
+
+.roulette-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+}
+
+.roulette-icon-spin {
+    font-size: 3rem;
+    animation: spinDice 1s infinite cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes spinDice {
+    0% { transform: rotate(0deg) scale(1); }
+    50% { transform: rotate(180deg) scale(1.2); }
+    100% { transform: rotate(360deg) scale(1); }
+}
+
+.roulette-header h3 {
+    font-family: var(--font-arcade);
+    font-size: 1.1rem;
+    color: var(--friv-yellow);
+    letter-spacing: 1px;
+}
+
+.roulette-reel-wrapper {
+    background: #0a0c16;
+    border: 2px solid var(--border-subtle);
+    border-radius: 16px;
+    padding: 1.5rem;
+    margin-bottom: 1rem;
+    box-shadow: inset 0 4px 12px rgba(0, 0, 0, 0.8);
+}
+
+.roulette-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.6rem;
+    transition: transform 0.08s ease;
+}
+
+.roulette-item .item-icon {
+    font-size: 3.8rem;
+}
+
+.roulette-item .item-title {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    color: #ffffff;
+}
+
+.roulette-status {
+    font-size: 0.85rem;
+    color: var(--text-secondary);
+}
+
+/* ==========================================================================
+   PIE DE PÁGINA
+   ========================================================================== */
+.friv-footer {
+    border-top: 2px solid var(--border-subtle);
+    padding: 2rem 0;
+    margin-top: auto;
+}
+
+.footer-content {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+}
+
+.friv-logo-small {
+    font-family: var(--font-heading);
+    font-size: 1.4rem;
+    font-weight: 800;
+    color: var(--friv-yellow);
+}
+
+.friv-logo-small span {
+    color: var(--friv-pink);
+}
+
+.footer-branding p {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin-top: 0.2rem;
+}
+
+.footer-shortcuts {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+}
+
+.shortcut-item {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+kbd {
+    background: var(--bg-surface-elevated);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 0.15rem 0.45rem;
+    border-radius: 4px;
+    font-family: var(--font-arcade);
+    font-size: 0.75rem;
+    color: var(--friv-cyan);
+    box-shadow: 0 2px 0 rgba(0, 0, 0, 0.4);
+}
+
+.footer-copy {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+}
+
+/* Clases Utilitarias */
+.hidden {
+    display: none !important;
+}
+
+/* ==========================================================================
+   RESPONSIVIDAD Y ADAPTACIÓN MÓVIL
+   ========================================================================== */
+@media (max-width: 900px) {
+    .friv-navbar {
+        flex-wrap: wrap;
+    }
+    .search-container {
+        order: 3;
+        max-width: 100%;
+        margin-top: 0.5rem;
+    }
+    .player-container {
+        height: 96vh;
+        border-radius: 12px;
+    }
+}
+
+@media (max-width: 600px) {
+    .header-tagline {
+        display: none;
+    }
+    .friv-logo {
+        font-size: 1.8rem;
+    }
+    .games-grid {
+        grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+        gap: 0.9rem;
+    }
+    .card-thumbnail {
+        height: 120px;
+    }
+    .game-big-icon {
+        font-size: 2.8rem;
+    }
+    .card-info {
+        padding: 0.75rem;
+    }
+    .card-title {
+        font-size: 0.95rem;
+    }
+    .card-description {
+        display: none;
+    }
+    .player-topbar {
+        padding: 0.6rem 0.8rem;
+    }
+    .player-btn span:not(.btn-arrow):not(#player-favorite-icon):not(#fullscreen-icon) {
+        display: none;
+    }
+    .btn-back {
+        padding: 0.45rem 0.7rem !important;
+    }
+    .footer-content {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}

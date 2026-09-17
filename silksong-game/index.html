@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Hollow Knight: Silksong - Pharloom Chronicles</title>
+  <meta name="description" content="Juego 2D metroidvania inspirado en Hollow Knight: Silksong con Hornet, mecánicas de seda, pogo con aguja, biomas de Pharloom y batallas de jefes.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <div id="game-container">
+    <!-- Main Render Canvas -->
+    <canvas id="gameCanvas"></canvas>
+
+    <!-- Atmospheric Vignette & Grain Layer -->
+    <div class="vignette-overlay"></div>
+
+    <!-- HUD (Top-Left): Health Masks & Silk Spool -->
+    <div id="hud">
+      <!-- Hornet Silk Spool -->
+      <div class="silk-spool-container" id="silk-spool">
+        <canvas class="silk-gauge-canvas" id="spoolCanvas" width="76" height="76"></canvas>
+        <div class="silk-spool-icon">◈</div>
+        <div class="silk-bind-hint">[Q/E] TEJER SEDA</div>
+      </div>
+
+      <!-- Hornet Masks (5 Health Points) -->
+      <div class="masks-container">
+        <div class="masks-row" id="masks-row">
+          <!-- Mask 1 -->
+          <svg class="mask-icon" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2 C24 10 28 20 28 32 C28 38 22 40 16 40 C10 40 4 38 4 32 C4 20 8 10 16 2 Z" fill="#F8F9FA" stroke="#D1D5DB" stroke-width="2"/>
+            <ellipse cx="11" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+            <ellipse cx="21" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+          </svg>
+          <!-- Mask 2 -->
+          <svg class="mask-icon" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2 C24 10 28 20 28 32 C28 38 22 40 16 40 C10 40 4 38 4 32 C4 20 8 10 16 2 Z" fill="#F8F9FA" stroke="#D1D5DB" stroke-width="2"/>
+            <ellipse cx="11" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+            <ellipse cx="21" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+          </svg>
+          <!-- Mask 3 -->
+          <svg class="mask-icon" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2 C24 10 28 20 28 32 C28 38 22 40 16 40 C10 40 4 38 4 32 C4 20 8 10 16 2 Z" fill="#F8F9FA" stroke="#D1D5DB" stroke-width="2"/>
+            <ellipse cx="11" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+            <ellipse cx="21" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+          </svg>
+          <!-- Mask 4 -->
+          <svg class="mask-icon" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2 C24 10 28 20 28 32 C28 38 22 40 16 40 C10 40 4 38 4 32 C4 20 8 10 16 2 Z" fill="#F8F9FA" stroke="#D1D5DB" stroke-width="2"/>
+            <ellipse cx="11" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+            <ellipse cx="21" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+          </svg>
+          <!-- Mask 5 -->
+          <svg class="mask-icon" viewBox="0 0 32 42" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M16 2 C24 10 28 20 28 32 C28 38 22 40 16 40 C10 40 4 38 4 32 C4 20 8 10 16 2 Z" fill="#F8F9FA" stroke="#D1D5DB" stroke-width="2"/>
+            <ellipse cx="11" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+            <ellipse cx="21" cy="22" rx="2.5" ry="5" fill="#0A090E"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- HUD (Top-Right): Rosary Beads & Area Name -->
+    <div id="top-right-hud">
+      <div class="rosary-counter">
+        <div class="rosary-bead"></div>
+        <span id="rosary-count">0</span>
+      </div>
+      <div class="area-banner">Pharloom // Gruta Musgosa</div>
+    </div>
+
+    <!-- Boss Health Bar -->
+    <div id="boss-hud">
+      <div class="boss-title-container">
+        <span class="boss-title">VANGUARDIA DE CAMPANA</span>
+        <span class="boss-subtitle">Guardián del Sagrario</span>
+      </div>
+      <div class="boss-bar-frame">
+        <div class="boss-bar-ghost" id="boss-bar-ghost"></div>
+        <div class="boss-bar-fill" id="boss-bar-fill"></div>
+      </div>
+    </div>
+
+    <!-- Bench Prompt -->
+    <div id="bench-prompt">
+      <span>Presiona [B] para descansar en el banco</span>
+    </div>
+
+    <!-- Audio Toggle -->
+    <button id="audio-toggle-btn" title="Silenciar / Activar Sonido">🎵</button>
+
+    <!-- Notification Toast -->
+    <div id="toast-notification"></div>
+
+    <!-- On-Screen Virtual Controls (Click or Touch) -->
+    <div id="virtual-controls">
+      <div class="vpad-left">
+        <div class="vpad-row">
+          <button class="virtual-btn" id="vbtn-up" title="Arriba">▲</button>
+        </div>
+        <div class="vpad-row">
+          <button class="virtual-btn" id="vbtn-left" title="Izquierda">◀</button>
+          <button class="virtual-btn" id="vbtn-down" title="Abajo (Pogo en aire)">▼</button>
+          <button class="virtual-btn" id="vbtn-right" title="Derecha">▶</button>
+        </div>
+      </div>
+      <div class="vpad-right">
+        <button class="virtual-btn btn-action btn-dash" id="vbtn-dash" title="Dash (Shift)">⚡</button>
+        <button class="virtual-btn btn-action btn-attack" id="vbtn-attack" title="Atacar (J)">⚔️</button>
+        <button class="virtual-btn btn-action btn-jump" id="vbtn-jump" title="Saltar (Espacio)">🡹</button>
+        <button class="virtual-btn btn-action btn-heal" id="vbtn-heal" title="Curar Seda (Q/E)">🩹</button>
+      </div>
+    </div>
+
+    <!-- Pause & Controls Screen -->
+    <div class="game-overlay-screen" id="pause-screen">
+      <div class="silksong-modal-card">
+        <h2 class="screen-title">PHARLOOM</h2>
+        <p class="screen-desc">Guía de combate de la cazadora Hornet. Domina el pogo y la seda para superar a los guardianes.</p>
+        
+        <div class="controls-grid">
+          <div class="control-item">
+            <span class="control-name">Moverse</span>
+            <span class="key-badge">A / D o ← / →</span>
+          </div>
+          <div class="control-item">
+            <span class="control-name">Saltar / Salto de Muro</span>
+            <span class="key-badge">Espacio / Z</span>
+          </div>
+          <div class="control-item">
+            <span class="control-name">Ataque de Aguja</span>
+            <span class="key-badge">J / Clic Izquierdo</span>
+          </div>
+          <div class="control-item">
+            <span class="control-name">Pogo Diagonal (en aire)</span>
+            <span class="key-badge">S + J (o ↓ + Ataque)</span>
+          </div>
+          <div class="control-item">
+            <span class="control-name">Dash Aéreo Veloz</span>
+            <span class="key-badge">Shift / C</span>
+          </div>
+          <div class="control-item">
+            <span class="control-name">Arpón / Enganche a Anillas</span>
+            <span class="key-badge">K / Clic Derecho</span>
+          </div>
+          <div class="control-item">
+            <span class="control-name">Tejer Seda (Curar 3 máscaras)</span>
+            <span class="key-badge">Mantener Q o E</span>
+          </div>
+          <div class="control-item">
+            <span class="control-name">Descansar en Banco</span>
+            <span class="key-badge">B</span>
+          </div>
+        </div>
+
+        <button class="btn-silksong" id="resume-btn">Continuar Viaje</button>
+      </div>
+    </div>
+
+    <!-- Game Over Screen -->
+    <div class="game-overlay-screen" id="death-screen">
+      <div class="silksong-modal-card">
+        <h2 class="screen-title crimson">HAZ CAÍDO</h2>
+        <p class="screen-desc">El hilo del destino se ha quebrado en los abismos de Pharloom... Levántate de nuevo, cazadora.</p>
+        <button class="btn-silksong" id="respawn-btn">Despertar en el Banco</button>
+      </div>
+    </div>
+
+    <!-- Victory Screen -->
+    <div class="game-overlay-screen" id="victory-screen">
+      <div class="silksong-modal-card">
+        <h2 class="screen-title victory">VICTORIA</h2>
+        <p class="screen-desc">La Vanguardia de Campana ha caído ante la aguja de Hornet. Las puertas hacia la Ciudadela Superior de Pharloom han sido desbloqueadas.</p>
+        <button class="btn-silksong" id="restart-btn">Jugar de Nuevo</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Game Scripts -->
+  <script src="audio.js"></script>
+  <script src="particles.js"></script>
+  <script src="world.js"></script>
+  <script src="entities.js"></script>
+  <script src="game.js"></script>
+</body>
+</html>

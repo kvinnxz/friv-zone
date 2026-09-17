@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ajedrez Maestro AI | Juega Contra el Bot</title>
+    <meta name="description" content="Juego de ajedrez moderno y fluido con inteligencia artificial. Juega contra el bot en diferentes dificultades con análisis en tiempo real.">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-emerald">
+    <!-- Header -->
+    <header>
+        <div class="logo-area">
+            <div class="logo-icon">
+                <svg viewBox="0 0 24 24">
+                    <path d="M19 22H5V20H19V22M17.5 18H6.5L7.5 15H16.5L17.5 18M12 2C13.1 2 14 2.9 14 4C14 4.74 13.6 5.38 13 5.73V7H15V9H14V11.27C16.39 12.13 18 14.37 18 17H6C6 14.37 7.61 12.13 10 11.27V9H9V7H11V5.73C10.4 5.38 10 4.74 10 4C10 2.9 10.9 2 12 2Z"/>
+                </svg>
+            </div>
+            <h1 class="logo-title">Ajedrez AI</h1>
+            <span class="logo-badge">Bot v2.4</span>
+        </div>
+
+        <div class="header-actions">
+            <!-- Selector de Tema -->
+            <div class="select-wrapper">
+                <select id="themeSelect" class="select-control" aria-label="Seleccionar tema visual del tablero">
+                    <option value="theme-emerald">🌿 Esmeralda</option>
+                    <option value="theme-wood">🪵 Madera Nórdica</option>
+                    <option value="theme-obsidian">🌑 Obsidiana Slate</option>
+                    <option value="theme-neon">⚡ Cyber Neón</option>
+                </select>
+            </div>
+
+            <!-- Botón Silenciar / Sonido -->
+            <button id="btnSound" class="btn-icon" title="Activar/Desactivar Sonido" aria-label="Alternar sonido">
+                <svg id="soundIconOn" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+                </svg>
+                <svg id="soundIconOff" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: none;">
+                    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+                    <line x1="23" y1="9" x2="17" y2="15"></line>
+                    <line x1="17" y1="9" x2="23" y2="15"></line>
+                </svg>
+            </button>
+        </div>
+    </header>
+
+    <!-- Contenedor Principal -->
+    <main class="main-container">
+        <!-- Zona de Juego -->
+        <section class="game-area">
+            <!-- Barra del Bot (Jugador Superior) -->
+            <div id="botPlayerBar" class="player-bar">
+                <div class="player-info">
+                    <div id="botAvatar" class="player-avatar">
+                        🤖
+                    </div>
+                    <div class="player-details">
+                        <div class="player-name-row">
+                            <span class="player-name">DeepBot AI</span>
+                            <span class="player-role-badge bot">BOT</span>
+                        </div>
+                        <div id="botCaptured" class="captured-pieces-row"></div>
+                    </div>
+                </div>
+                <div class="turn-indicator">
+                    <span id="botStatusDot" class="status-dot"></span>
+                    <span id="botStatusText">Esperando turno</span>
+                </div>
+            </div>
+
+            <!-- Tablero y Barra de Evaluación -->
+            <div class="board-wrapper">
+                <!-- Barra de Evaluación -->
+                <div class="eval-bar-container" title="Evaluación de posición">
+                    <div id="evalBarWhite" class="eval-bar-white"></div>
+                    <span id="evalScoreText" class="eval-score-text">0.0</span>
+                </div>
+
+                <!-- Tablero de 64 casillas -->
+                <div class="board-container">
+                    <div id="chessboard" class="chessboard" role="grid" aria-label="Tablero de ajedrez"></div>
+                </div>
+            </div>
+
+            <!-- Barra del Humano (Jugador Inferior) -->
+            <div id="humanPlayerBar" class="player-bar active-turn">
+                <div class="player-info">
+                    <div class="player-avatar">
+                        👤
+                    </div>
+                    <div class="player-details">
+                        <div class="player-name-row">
+                            <span class="player-name">Tú (Blancas)</span>
+                            <span class="player-role-badge human">HUMANO</span>
+                        </div>
+                        <div id="humanCaptured" class="captured-pieces-row"></div>
+                    </div>
+                </div>
+                <div class="turn-indicator">
+                    <span id="humanStatusDot" class="status-dot active"></span>
+                    <span id="humanStatusText">Tu turno</span>
+                </div>
+            </div>
+        </section>
+
+        <!-- Panel Lateral (Sidebar) -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="sidebar-title">
+                    <span>⚔️</span> Partida
+                </div>
+                <span id="gameMoveCount" class="logo-badge">Turno 1</span>
+            </div>
+
+            <!-- Modo de Juego -->
+            <div class="difficulty-selector">
+                <span class="section-label">Modo de Juego</span>
+                <div class="side-tabs">
+                    <button id="btnModeBot" class="diff-tab active" data-mode="bot">🤖 vs Bot</button>
+                    <button id="btnModePvP" class="diff-tab" data-mode="pvp">👥 2 Jugadores</button>
+                </div>
+            </div>
+
+            <!-- Selector de Bando (solo visible en modo Bot) -->
+            <div id="sideSelectorSection" class="difficulty-selector">
+                <span class="section-label">Jugar con</span>
+                <div class="side-tabs">
+                    <button id="btnSideWhite" class="diff-tab active" data-side="w">⚪ Blancas</button>
+                    <button id="btnSideBlack" class="diff-tab" data-side="b">⚫ Negras</button>
+                </div>
+            </div>
+
+            <!-- Selector de Dificultad (solo visible en modo Bot) -->
+            <div id="diffSelectorSection" class="difficulty-selector">
+                <span class="section-label">Nivel de Dificultad del Bot</span>
+                <div class="difficulty-tabs">
+                    <button class="diff-tab" data-level="easy">Fácil</button>
+                    <button class="diff-tab active" data-level="medium">Medio</button>
+                    <button class="diff-tab" data-level="hard">Difícil</button>
+                </div>
+            </div>
+
+            <!-- Registro de Jugadas -->
+            <div class="moves-container" id="movesScroll">
+                <table class="moves-table">
+                    <thead>
+                        <tr>
+                            <th class="move-num">#</th>
+                            <th>Blancas</th>
+                            <th>Negras</th>
+                        </tr>
+                    </thead>
+                    <tbody id="movesBody">
+                        <!-- Las jugadas se insertan dinámicamente -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Estado de la Partida -->
+            <div id="gameStatusBanner" class="game-status-banner">
+                <span>Estado:</span> <span id="gameStatusDetail" class="status-highlight">Partida en curso</span>
+            </div>
+
+            <!-- Controles / Botones -->
+            <div class="sidebar-actions">
+                <button id="btnNewGame" class="action-btn btn-primary" title="Iniciar nueva partida">
+                    <svg viewBox="0 0 24 24"><path d="M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8M21 3v5h-5M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16M3 21v-5h5"/></svg>
+                    <span>Nueva</span>
+                </button>
+                <button id="btnUndo" class="action-btn" title="Deshacer última jugada">
+                    <svg viewBox="0 0 24 24"><path d="M3 7v6h6M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"/></svg>
+                    <span>Deshacer</span>
+                </button>
+                <button id="btnFlip" class="action-btn" title="Girar vista del tablero">
+                    <svg viewBox="0 0 24 24"><path d="M7 16V4m0 0L3 8m4-4l4 4m6 4v12m0 0l4-4m-4 4l-4-4"/></svg>
+                    <span>Girar</span>
+                </button>
+            </div>
+        </aside>
+    </main>
+
+    <!-- Modal de Promoción de Peón -->
+    <div id="promotionModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="promoTitle">
+        <div class="modal-box">
+            <h2 id="promoTitle" class="modal-title">Promoción de Peón</h2>
+            <p class="modal-subtitle">Selecciona la pieza a la que deseas coronar:</p>
+            <div class="promo-grid">
+                <div class="promo-option" data-promo="q">
+                    <div id="promoQueenSvg"></div>
+                    <span class="promo-label">Dama</span>
+                </div>
+                <div class="promo-option" data-promo="r">
+                    <div id="promoRookSvg"></div>
+                    <span class="promo-label">Torre</span>
+                </div>
+                <div class="promo-option" data-promo="b">
+                    <div id="promoBishopSvg"></div>
+                    <span class="promo-label">Alfil</span>
+                </div>
+                <div class="promo-option" data-promo="n">
+                    <div id="promoKnightSvg"></div>
+                    <span class="promo-label">Caballo</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Fin de Partida -->
+    <div id="gameOverModal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="gameOverTitle">
+        <div class="modal-box">
+            <div id="gameOverIcon" class="gameover-icon">🏆</div>
+            <h2 id="gameOverTitle" class="modal-title">¡Fin de la Partida!</h2>
+            <p id="gameOverReason" class="modal-subtitle">Jaque mate. ¡Has ganado la partida!</p>
+            <button id="btnRestartModal" class="btn-restart-large">Jugar Otra Partida</button>
+        </div>
+    </div>
+
+    <!-- Scripts en orden -->
+    <script src="js/pieces.js"></script>
+    <script src="js/chess-rules.js"></script>
+    <script src="js/chess-ai.js"></script>
+    <script src="js/chess-audio.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
